@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-fragment xmlns:ser="http://www.bea.com/wli/sb/services" xmlns:tran="http://www.bea.com/wli/sb/transports" xmlns:env="http://www.bea.com/wli/config/env" xmlns:http="http://www.bea.com/wli/sb/transports/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:con1="http://www.bea.com/wli/sb/typesystem/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config">
+  <ser:coreEntry isProxy="true" isEnabled="true">
+    <ser:description>Exposed HTTP proxy for connection to OUVoiceActivity services. Rejects the request if no valid SAMS token present in the request</ser:description>
+    <ser:binding type="SOAP" isSoap12="false" xsi:type="con4:SoapBindingType" xmlns:con4="http://www.bea.com/wli/sb/services/bindings/config">
+      <con4:wsdl ref="ServiceRepository/Contact/NextNumberGenWS/wsdl/NextNumberGenWS"/>
+      <con4:port>
+        <con4:name>NextNumberGenWSSoap</con4:name>
+        <con4:namespace>http://csintra6.open.ac.uk/NextNumberGenWS/</con4:namespace>
+      </con4:port>
+      <con4:selector type="SOAP body"/>
+      <con4:WSI-compliant>false</con4:WSI-compliant>
+    </ser:binding>
+    <ser:monitoring isEnabled="true">
+      <ser:aggregationInterval>10</ser:aggregationInterval>
+      <ser:pipelineMonitoringLevel>Pipeline</ser:pipelineMonitoringLevel>
+    </ser:monitoring>
+    <ser:reporting>true</ser:reporting>
+    <ser:logging isEnabled="true">
+      <ser:logLevel>debug</ser:logLevel>
+    </ser:logging>
+    <ser:sla-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:sla-alerting>
+    <ser:pipeline-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:pipeline-alerting>
+    <ser:ws-policy>
+      <ser:binding-mode>wsdl-policy-attachments</ser:binding-mode>
+    </ser:ws-policy>
+  </ser:coreEntry>
+  <ser:endpointConfig>
+    <tran:provider-id>http</tran:provider-id>
+    <tran:inbound>true</tran:inbound>
+    <tran:URI>
+      <env:value>/osb/Contact/GetCustomerPI/1.0</env:value>
+    </tran:URI>
+    <tran:inbound-properties/>
+    <tran:all-headers>false</tran:all-headers>
+    <tran:provider-specific>
+      <http:inbound-properties/>
+    </tran:provider-specific>
+  </ser:endpointConfig>
+  <ser:router errorHandler="_onErrorHandler-8862146484506781370-5034158e.13ef9f5de90.-735e">
+    <con:pipeline type="request" name="GetCustomerPIPipe_request">
+      <con:stage name="AddHeader" xmlns:con4="http://www.bea.com/wli/sb/typesystem/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+        <con:context>
+          <con2:userNsDecl namespace="http://open.ac.uk/header/" prefix="ouh"/>
+        </con:context>
+        <con:actions>
+          <con3:assign varName="header">
+            <con2:id>_ActionId-8862146484506781370-5034158e.13ef9f5de90.-75d1</con2:id>
+            <con3:expr>
+              <con2:xqueryTransform>
+                <con2:resource ref="Common/header/xquery/AddHeader"/>
+                <con2:param name="header">
+                  <con2:path>$header</con2:path>
+                </con2:param>
+              </con2:xqueryTransform>
+            </con3:expr>
+          </con3:assign>
+        </con:actions>
+      </con:stage>
+      <con:stage name="CheckSamsTrust2TokenPresent">
+        <con:context>
+          <con2:userNsDecl namespace="http://open.ac.uk/header/" prefix="ouh"/>
+          <con2:userNsDecl namespace="http://open.ac.uk/schema/faults" prefix="oufault"/>
+          <con2:varNsDecl namespace="http://www.open.ac.uk/voice/webservices/OUVoiceUpsertAccountWS" prefix="ouv"/>
+          <con2:varNsDecl namespace="http://open.ac.uk/audit/" prefix="aud"/>
+          <con1:variable name="audit" path="$audit" asChild="false">
+            <con1:schema ref="ServiceRepository/ouosb/xsd/Audit" element="Audit"/>
+          </con1:variable>
+        </con:context>
+        <con:actions>
+          <con3:wsCallout>
+            <con2:id>_ActionId-7891867840639025190--105bdd11.14371eac25f.-7f9d</con2:id>
+            <con3:service xsi:type="ref:ProxyRef" ref="Sams/proxy/ValidateSamsToken" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+            <con3:operation>ValidateToken</con3:operation>
+            <con3:request>
+              <con3:body wrapped="true">$body</con3:body>
+              <con3:header>$header</con3:header>
+            </con3:request>
+            <con3:response>
+              <con3:body wrapped="true">body</con3:body>
+              <con3:header>headerResponse</con3:header>
+            </con3:response>
+            <con3:requestTransform>
+              <con1:assign varName="store" xmlns:con3="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config">
+                <con2:id>_ActionId-7891867840639025190--105bdd11.14371eac25f.-7fa1</con2:id>
+                <con1:expr>
+                  <con2:xqueryTransform>
+                    <con2:resource ref="Common/audit/xquery/Store"/>
+                    <con2:param name="endpoint">
+                      <con2:path>$outbound</con2:path>
+                    </con2:param>
+                    <con2:param name="body">
+                      <con2:path>$body</con2:path>
+                    </con2:param>
+                    <con2:param name="header">
+                      <con2:path>$header</con2:path>
+                    </con2:param>
+                  </con2:xqueryTransform>
+                </con1:expr>
+              </con1:assign>
+              <con3:replace varName="body">
+                <con2:id>_ActionId-7891867840639025190--105bdd11.14371eac25f.-7fa0</con2:id>
+                <con3:location>
+                  <con2:xpathText>./*</con2:xpathText>
+                </con3:location>
+                <con3:expr>
+                  <con2:xqueryText>$inbound</con2:xqueryText>
+                </con3:expr>
+              </con3:replace>
+            </con3:requestTransform>
+            <con3:responseTransform>
+              <con3:replace varName="body">
+                <con2:id>_ActionId-7891867840639025190--105bdd11.14371eac25f.-7f9f</con2:id>
+                <con3:location>
+                  <con2:xpathText>.</con2:xpathText>
+                </con3:location>
+                <con3:expr>
+                  <con2:xqueryText>$store/soap-env:Body</con2:xqueryText>
+                </con3:expr>
+              </con3:replace>
+              <con1:assign varName="samsToken" xmlns:con3="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/typesystem/config">
+                <con2:id>_ActionId-7891867840639025190--105bdd11.14371eac25f.-7f9e</con2:id>
+                <con1:expr>
+                  <con2:xqueryTransform>
+                    <con2:resource ref="Sams/xquery/ExtractToken"/>
+                    <con2:param name="inbound">
+                      <con2:path>$inbound</con2:path>
+                    </con2:param>
+                  </con2:xqueryTransform>
+                </con1:expr>
+              </con1:assign>
+            </con3:responseTransform>
+          </con3:wsCallout>
+        </con:actions>
+      </con:stage>
+      <con:stage name="ValidateMsg">
+        <con:context>
+          <con2:varNsDecl namespace="http://www.open.ac.uk/voice/webservices/OUVoiceUpsertAccountWS" prefix="ouv"/>
+        </con:context>
+        <con:actions>
+          <con3:assign varName="validate">
+            <con2:id>_ActionId-6130520276484227628-5623da7c.1426fa9f5b3.-791c</con2:id>
+            <con3:expr>
+              <con2:xqueryTransform>
+                <con2:resource ref="OUVoiceActivity/xquery/ConfigXml"/>
+                <con2:param name="key">
+                  <con2:path>'validate'</con2:path>
+                </con2:param>
+              </con2:xqueryTransform>
+            </con3:expr>
+          </con3:assign>
+          <con3:ifThenElse>
+            <con2:id>_ActionId-6130520276484227628-5623da7c.1426fa9f5b3.-7745</con2:id>
+            <con3:case>
+              <con3:condition>
+                <con2:xqueryText>$validate = 'true'</con2:xqueryText>
+              </con3:condition>
+              <con3:actions>
+                <con3:ifThenElse>
+                  <con2:id>_ActionId-6130520276484227628-5623da7c.1426fa9f5b3.-766b</con2:id>
+                  <con3:case>
+                    <con3:condition>
+                      <con2:xqueryText>$operation = 'OUGenerateNextCode'</con2:xqueryText>
+                    </con3:condition>
+                    <con3:actions>
+                      <con3:validate>
+                        <con2:id>_ActionId-6130520276484227628-5623da7c.1426fa9f5b3.-7633</con2:id>
+                        <con3:wsdl ref="ServiceRepository/Contact/NextNumberGenWS/wsdl/NextNumberGenWS"/>
+                        <con3:schemaElement xmlns:ouv="http://www.open.ac.uk/voice/webservices/OUVoiceUpsertAccountWS" xmlns:nex="http://csintra6.open.ac.uk/NextNumberGenWS/">nex:OUGenerateNextCode</con3:schemaElement>
+                        <con3:varName>body</con3:varName>
+                        <con3:location>
+                          <con2:xpathText>./*</con2:xpathText>
+                        </con3:location>
+                      </con3:validate>
+                    </con3:actions>
+                  </con3:case>
+                  <con3:case>
+                    <con3:condition>
+                      <con2:xqueryText>$operation = 'OUGenerateNextEnquiryNum'</con2:xqueryText>
+                    </con3:condition>
+                    <con3:actions>
+                      <con3:validate>
+                        <con2:id>_ActionId-6130520276484227628-5623da7c.1426fa9f5b3.-75c4</con2:id>
+                        <con3:wsdl ref="ServiceRepository/Contact/NextNumberGenWS/wsdl/NextNumberGenWS"/>
+                        <con3:schemaElement xmlns:ouv="http://www.open.ac.uk/voice/webservices/OUVoiceUpsertAccountWS" xmlns:nex="http://csintra6.open.ac.uk/NextNumberGenWS/">nex:OUGenerateNextEnquiryNum</con3:schemaElement>
+                        <con3:varName>body</con3:varName>
+                        <con3:location>
+                          <con2:xpathText>./*</con2:xpathText>
+                        </con3:location>
+                      </con3:validate>
+                    </con3:actions>
+                  </con3:case>
+                  <con3:case>
+                    <con3:condition>
+                      <con2:xqueryText>$operation = 'OUGenerateNextPersonalId'</con2:xqueryText>
+                    </con3:condition>
+                    <con3:actions>
+                      <con3:validate>
+                        <con2:id>_ActionId-6130520276484227628-5623da7c.1426fa9f5b3.-7555</con2:id>
+                        <con3:wsdl ref="ServiceRepository/Contact/NextNumberGenWS/wsdl/NextNumberGenWS"/>
+                        <con3:schemaElement xmlns:ouv="http://www.open.ac.uk/voice/webservices/OUVoiceUpsertAccountWS" xmlns:nex="http://csintra6.open.ac.uk/NextNumberGenWS/">nex:OUGenerateNextPersonalId</con3:schemaElement>
+                        <con3:varName>body</con3:varName>
+                        <con3:location>
+                          <con2:xpathText>./*</con2:xpathText>
+                        </con3:location>
+                      </con3:validate>
+                    </con3:actions>
+                  </con3:case>
+                  <con3:case>
+                    <con3:condition>
+                      <con2:xqueryText>$operation = 'OUGenerateNextPersonalIdTAL'</con2:xqueryText>
+                    </con3:condition>
+                    <con3:actions>
+                      <con3:validate>
+                        <con2:id>_ActionId-6130520276484227628-5623da7c.1426fa9f5b3.-74e6</con2:id>
+                        <con3:wsdl ref="ServiceRepository/Contact/NextNumberGenWS/wsdl/NextNumberGenWS"/>
+                        <con3:schemaElement xmlns:ouv="http://www.open.ac.uk/voice/webservices/OUVoiceUpsertAccountWS" xmlns:nex="http://csintra6.open.ac.uk/NextNumberGenWS/">nex:OUGenerateNextPersonalIdTAL</con3:schemaElement>
+                        <con3:varName>body</con3:varName>
+                        <con3:location>
+                          <con2:xpathText>./*</con2:xpathText>
+                        </con3:location>
+                      </con3:validate>
+                    </con3:actions>
+                  </con3:case>
+                  <con3:case>
+                    <con3:condition>
+                      <con2:xqueryText>$operation = 'OUGenerateNextReservationNum'</con2:xqueryText>
+                    </con3:condition>
+                    <con3:actions>
+                      <con3:validate>
+                        <con2:id>_ActionId-1679631542159650818-7ef5bbd.143b936e24d.-7d6c</con2:id>
+                        <con3:wsdl ref="ServiceRepository/Contact/NextNumberGenWS/wsdl/NextNumberGenWS"/>
+                        <con3:schemaElement xmlns:nex="http://csintra6.open.ac.uk/NextNumberGenWS/">nex:OUGenerateNextReservationNum</con3:schemaElement>
+                        <con3:varName>body</con3:varName>
+                        <con3:location>
+                          <con2:xpathText>./*</con2:xpathText>
+                        </con3:location>
+                      </con3:validate>
+                    </con3:actions>
+                  </con3:case>
+                  <con3:case>
+                    <con3:condition>
+                      <con2:xqueryText>$operation = 'OUGenerateNextStaffId'</con2:xqueryText>
+                    </con3:condition>
+                    <con3:actions>
+                      <con3:validate>
+                        <con2:id>_ActionId-1679631542159650818-7ef5bbd.143b936e24d.-7cfb</con2:id>
+                        <con3:wsdl ref="ServiceRepository/Contact/NextNumberGenWS/wsdl/NextNumberGenWS"/>
+                        <con3:schemaElement xmlns:nex="http://csintra6.open.ac.uk/NextNumberGenWS/">nex:OUGenerateNextStaffId</con3:schemaElement>
+                        <con3:varName>body</con3:varName>
+                        <con3:location>
+                          <con2:xpathText>./*</con2:xpathText>
+                        </con3:location>
+                      </con3:validate>
+                    </con3:actions>
+                  </con3:case>
+                  <con3:case>
+                    <con3:condition>
+                      <con2:xqueryText>$operation = 'OUGenerateNextStudentSupportNumber'</con2:xqueryText>
+                    </con3:condition>
+                    <con3:actions>
+                      <con3:validate>
+                        <con2:id>_ActionId-1679631542159650818-7ef5bbd.143b936e24d.-7cdd</con2:id>
+                        <con3:wsdl ref="ServiceRepository/Contact/NextNumberGenWS/wsdl/NextNumberGenWS"/>
+                        <con3:schemaElement xmlns:nex="http://csintra6.open.ac.uk/NextNumberGenWS/">nex:OUGenerateNextStudentSupportNumber</con3:schemaElement>
+                        <con3:varName>body</con3:varName>
+                        <con3:location>
+                          <con2:xpathText>./*</con2:xpathText>
+                        </con3:location>
+                      </con3:validate>
+                    </con3:actions>
+                  </con3:case>
+                  <con3:default/>
+                </con3:ifThenElse>
+              </con3:actions>
+            </con3:case>
+          </con3:ifThenElse>
+        </con:actions>
+      </con:stage>
+    </con:pipeline>
+    <con:pipeline type="response" name="GetCustomerPIPipe_response"/>
+    <con:pipeline type="error" name="_onErrorHandler-8862146484506781370-5034158e.13ef9f5de90.-735e">
+      <con:stage name="RecordSoapFault">
+        <con:context xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+          <con6:userNsDecl namespace="http://open.ac.uk/header/" prefix="ouh" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+          <con6:varNsDecl namespace="http://open.ac.uk/audit/" prefix="aud" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+          <con6:varNsDecl namespace="http://www.open.ac.uk/voice/webservices/ouvoicegetcontactws" prefix="ouv" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+          <con6:variable name="store" path="$store" asChild="false" xmlns:con6="http://www.bea.com/wli/sb/typesystem/config">
+            <con6:schema ref="ServiceRepository/ouosb/xsd/Audit" element="Audit"/>
+          </con6:variable>
+        </con:context>
+        <con:actions xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+          <con3:assign varName="faultRequest">
+            <con2:id>_ActionId-7696673444199868766--28667bfc.1426ac021af.-736c</con2:id>
+            <con3:expr>
+              <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config"><![CDATA[<errorData>
+	<header>
+	{
+	if (fn:exists($store/soap-env:Header)) then 
+        $store/soap-env:Header
+    else $header
+    }
+	</header>	
+	<body>{$body}</body>
+	<storeBody>
+	{
+	if (fn:exists($store/soap-env:Body)) then 
+        $store/soap-env:Body
+    else $body
+    }
+	</storeBody>
+	<inbound>{$inbound}</inbound>
+	<outbound>{$store/ctx:endpoint}</outbound>
+	<fault>{$fault}</fault>
+</errorData>]]></con6:xqueryText>
+            </con3:expr>
+          </con3:assign>
+          <con3:wsCallout>
+            <con2:id>_ActionId-7696673444199868766--28667bfc.1426ac021af.-736b</con2:id>
+            <con3:service xsi:type="ref:ProxyRef" ref="Common/error/proxy/FaultHandler" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+            <con3:request>
+              <con3:payload>$faultRequest</con3:payload>
+            </con3:request>
+            <con3:response>
+              <con3:payload>faultResponse</con3:payload>
+            </con3:response>
+            <con3:requestTransform/>
+            <con3:responseTransform/>
+          </con3:wsCallout>
+          <con3:assign varName="header">
+            <con2:id>_ActionId-7696673444199868766--28667bfc.1426ac021af.-736a</con2:id>
+            <con3:expr>
+              <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$faultResponse/audit/*:Audit/soap-env:Header</con6:xqueryText>
+            </con3:expr>
+          </con3:assign>
+          <con4:report>
+            <con2:id>_ActionId-7696673444199868766--28667bfc.1426ac021af.-7369</con2:id>
+            <con4:expr>
+              <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$faultResponse/audit/*</con6:xqueryText>
+            </con4:expr>
+            <con4:labels>
+              <con4:key>Error</con4:key>
+              <con4:varName>fault</con4:varName>
+              <con4:value>
+                <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">./ctx:errorCode</con6:xpathText>
+              </con4:value>
+            </con4:labels>
+            <con4:labels>
+              <con4:key>Id</con4:key>
+              <con4:varName>header</con4:varName>
+              <con4:value>
+                <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">ouh:Header/CorrelationId</con6:xpathText>
+              </con4:value>
+            </con4:labels>
+          </con4:report>
+        </con:actions>
+      </con:stage>
+      <con:stage name="ReturnFaultToClient">
+        <con:context xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+          <con6:varNsDecl namespace="http://lv.com/osb/report/" prefix="rep" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+          <con6:varNsDecl namespace="http://www.open.ac.uk/voice/webservices/ouvoicegetcontactws" prefix="ouv" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+        </con:context>
+        <con:actions xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+          <con3:replace contents-only="true" varName="body">
+            <con2:id>_ActionId-7696673444199868766--28667bfc.1426ac021af.-72c2</con2:id>
+            <con3:expr>
+              <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$faultResponse/soapFault/*</con6:xqueryText>
+            </con3:expr>
+          </con3:replace>
+          <con6:reply isError="true" xmlns:con6="http://www.bea.com/wli/sb/stages/config">
+            <con6:id>_ActionId-7696673444199868766--28667bfc.1426ac021af.-72c1</con6:id>
+          </con6:reply>
+        </con:actions>
+      </con:stage>
+    </con:pipeline>
+    <con:flow>
+      <con:pipeline-node name="GetCustomerPIPipe">
+        <con:request>GetCustomerPIPipe_request</con:request>
+        <con:response>GetCustomerPIPipe_response</con:response>
+      </con:pipeline-node>
+      <con:route-node name="RouteToGetCustomerPIBiz">
+        <con:context xmlns:con4="http://www.bea.com/wli/sb/typesystem/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+          <con2:userNsDecl namespace="http://www.open.ac.uk/SAMS/AuthService/" prefix="aut"/>
+          <con2:varNsDecl namespace="http://open.ac.uk/audit/" prefix="aud"/>
+          <con5:variable name="store" path="$store" asChild="false" xmlns:con5="http://www.bea.com/wli/sb/typesystem/config">
+            <con5:schema ref="ServiceRepository/ouosb/xsd/Audit" element="Audit"/>
+          </con5:variable>
+        </con:context>
+        <con:actions xmlns:con4="http://www.bea.com/wli/sb/typesystem/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+          <con1:route>
+            <con2:id>_ActionId-8862146484506781370-5034158e.13ef9f5de90.-755c</con2:id>
+            <con1:service ref="GetCustomerPI/biz/GetCustomerPI" xsi:type="ref:BusinessServiceRef" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+            <con1:operation passThrough="true"/>
+            <con1:outboundTransform>
+              <con1:transport-headers copy-all="false" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config">
+                <con2:id>_ActionId-8862146484506781370-5034158e.13ef9f5de90.-755b</con2:id>
+                <con1:header-set>outbound-request</con1:header-set>
+                <con1:header value="expression" name="Cookie">
+                  <con2:xqueryTransform>
+                    <con2:resource ref="Sams/xquery/SamsCookie"/>
+                    <con2:param name="samsToken">
+                      <con2:path>$samsToken</con2:path>
+                    </con2:param>
+                  </con2:xqueryTransform>
+                </con1:header>
+              </con1:transport-headers>
+              <con1:assign varName="store" xmlns:con3="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config">
+                <con2:id>_ActionId-8862146484506781370-5034158e.13ef9f5de90.-755a</con2:id>
+                <con1:expr>
+                  <con2:xqueryTransform>
+                    <con2:resource ref="Common/audit/xquery/Store"/>
+                    <con2:param name="endpoint">
+                      <con2:path>$outbound</con2:path>
+                    </con2:param>
+                    <con2:param name="body">
+                      <con2:path>$body</con2:path>
+                    </con2:param>
+                    <con2:param name="header">
+                      <con2:path>$header</con2:path>
+                    </con2:param>
+                  </con2:xqueryTransform>
+                </con1:expr>
+              </con1:assign>
+            </con1:outboundTransform>
+            <con1:responseTransform>
+              <con3:assign varName="header">
+                <con2:id>_ActionId-3390445369791613966--55fa15c0.13f13471496.-7c8d</con2:id>
+                <con3:expr>
+                  <con2:xqueryText>$store/soap-env:Header</con2:xqueryText>
+                </con3:expr>
+              </con3:assign>
+            </con1:responseTransform>
+          </con1:route>
+        </con:actions>
+      </con:route-node>
+    </con:flow>
+  </ser:router>
+  <!--ALERT_RULE <ser:alertRules xmlns:aler="http://www.bea.com/wli/monitoring/alert" xmlns:ser="http://www.bea.com/wli/sb/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <ser:alertRule name="SLA Exceeded GetCustomerPI" enabled="true">
+      <aler:description xmlns:aler="http://www.bea.com/wli/monitoring/alert"/>
+      <aler:AlertFrequency xmlns:aler="http://www.bea.com/wli/monitoring/alert">every-time</aler:AlertFrequency>
+      <aler:AlertSeverity xmlns:aler="http://www.bea.com/wli/monitoring/alert">major</aler:AlertSeverity>
+      <aler:StopProcessing xmlns:aler="http://www.bea.com/wli/monitoring/alert">false</aler:StopProcessing>
+      <aler:Condition type="statistics" xmlns:aler="http://www.bea.com/wli/monitoring/alert">
+        <aler:config aggregation-interval="10" xsi:type="mon:monitoringConditionType" xmlns:mon="http://www.bea.com/wli/monitoring/alert/condition/monitoringstatistic">
+          <mon:monCondExpr>
+            <mon:function>average</mon:function>
+            <mon:lhs>Folder$GetCustomerPI$proxy/GetCustomerPI/Transport/response-time</mon:lhs>
+            <mon:lhs-operand-type>interval</mon:lhs-operand-type>
+            <mon:lhsDisplayName>Response Time</mon:lhsDisplayName>
+            <mon:operator>></mon:operator>
+            <mon:rhs>30000</mon:rhs>
+          </mon:monCondExpr>
+        </aler:config>
+      </aler:Condition>
+      <aler:AlertDestination ref="Common/alert/NagiosAlertDestination" xmlns:aler="http://www.bea.com/wli/monitoring/alert"/>
+      <aler:AlertSummary xsi:nil="true" xmlns:aler="http://www.bea.com/wli/monitoring/alert"/>
+    </ser:alertRule>
+  </ser:alertRules> ALERT_RULE-->
+</xml-fragment>

@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-fragment xmlns:ser="http://www.bea.com/wli/sb/services" xmlns:tran="http://www.bea.com/wli/sb/transports" xmlns:env="http://www.bea.com/wli/config/env" xmlns:http="http://www.bea.com/wli/sb/transports/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:con="http://www.bea.com/wli/sb/typesystem/config" xmlns:con1="http://www.bea.com/wli/sb/pipeline/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config">
+  <ser:coreEntry isProxy="true" isEnabled="true">
+    <ser:binding type="abstract XML"/>
+    <ser:monitoring isEnabled="true">
+      <ser:aggregationInterval>10</ser:aggregationInterval>
+      <ser:pipelineMonitoringLevel>Pipeline</ser:pipelineMonitoringLevel>
+    </ser:monitoring>
+    <ser:reporting>true</ser:reporting>
+    <ser:logging isEnabled="true">
+      <ser:logLevel>debug</ser:logLevel>
+    </ser:logging>
+    <ser:sla-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:sla-alerting>
+    <ser:pipeline-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:pipeline-alerting>
+  </ser:coreEntry>
+  <ser:endpointConfig>
+    <tran:provider-id>local</tran:provider-id>
+    <tran:inbound>true</tran:inbound>
+    <tran:inbound-properties/>
+    <tran:all-headers>true</tran:all-headers>
+  </ser:endpointConfig>
+  <ser:router>
+    <con1:pipeline type="request" name="FaultHandlerPipe_request">
+      <con1:stage name="RecordSoapFault">
+        <con1:context>
+          <con2:userNsDecl namespace="http://open.ac.uk/header/" prefix="ouh"/>
+          <con2:varNsDecl namespace="http://open.ac.uk/fault/" prefix="faul"/>
+          <con2:varNsDecl namespace="http://open.ac.uk/audit/" prefix="aud"/>
+        </con1:context>
+        <con1:actions>
+          <con3:ifThenElse xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+            <con2:id>_ActionId-2267027235222698888-44ab630.14255b9064f.-740b</con2:id>
+            <con3:case>
+              <con3:condition>
+                <con2:xqueryText>fn:exists($body/errorData/body/soap-env:Body/soap-env:Fault)</con2:xqueryText>
+              </con3:condition>
+              <con3:actions>
+                <con3:assign varName="soapFault">
+                  <con2:id>_ActionId-2267027235222698888-44ab630.14255b9064f.-740a</con2:id>
+                  <con3:expr>
+                    <con2:xqueryText>$body/errorData/body/soap-env:Body/*</con2:xqueryText>
+                  </con3:expr>
+                </con3:assign>
+              </con3:actions>
+            </con3:case>
+            <con3:case>
+              <con3:condition>
+                <con2:xqueryText>fn:contains($body/errorData/fault/ctx:fault/ctx:errorCode,'BEA-382505') = fn:true()</con2:xqueryText>
+              </con3:condition>
+              <con3:actions xmlns:con7="http://www.bea.com/wli/sb/pipeline/config" xmlns:con6="http://www.bea.com/wli/sb/pipeline/config">
+                <con3:assign varName="soapFault">
+                  <con2:id>_ActionId-2267027235222698888-44ab630.14255b9064f.-7409</con2:id>
+                  <con3:expr>
+                    <con8:xqueryTransform xmlns:con8="http://www.bea.com/wli/sb/stages/config">
+                      <con8:resource ref="Common/error/xquery/SoapFaultWrapsOuFault.1.1"/>
+                      <con8:param name="message">
+                        <con8:path>'Schema (XSD) validation failed'</con8:path>
+                      </con8:param>
+                      <con8:param name="detail">
+                        <con8:path>$body/errorData/fault/ctx:fault/ctx:details/*</con8:path>
+                      </con8:param>
+                      <con8:param name="code">
+                        <con8:path>'1501'</con8:path>
+                      </con8:param>
+                    </con8:xqueryTransform>
+                  </con3:expr>
+                </con3:assign>
+              </con3:actions>
+            </con3:case>
+            <con3:case>
+              <con3:condition>
+                <con2:xqueryText>fn:starts-with($body/errorData/fault/ctx:fault/ctx:errorCode,'15') = fn:true()</con2:xqueryText>
+              </con3:condition>
+              <con3:actions xmlns:con7="http://www.bea.com/wli/sb/pipeline/config" xmlns:con6="http://www.bea.com/wli/sb/pipeline/config">
+                <con3:assign varName="soapFault">
+                  <con2:id>_ActionId-4800250933319428940-30c2a04e.142faf354db.-6cee</con2:id>
+                  <con3:expr>
+                    <con8:xqueryTransform xmlns:con8="http://www.bea.com/wli/sb/stages/config">
+                      <con8:resource ref="Common/error/xquery/SoapFaultWrapsOuFault.1.1"/>
+                      <con8:param name="message">
+                        <con8:path>$body/errorData/fault/ctx:fault/ctx:reason/text()</con8:path>
+                      </con8:param>
+                      <con8:param name="detail">
+                        <con8:path>$body/errorData/fault/ctx:fault/ctx:details/*</con8:path>
+                      </con8:param>
+                      <con8:param name="code">
+                        <con8:path>$body/errorData/fault/ctx:fault/ctx:errorCode/text()</con8:path>
+                      </con8:param>
+                    </con8:xqueryTransform>
+                  </con3:expr>
+                </con3:assign>
+              </con3:actions>
+            </con3:case>
+            <con3:default>
+              <con6:assign varName="soapFault" xmlns:con6="http://www.bea.com/wli/sb/stages/transform/config">
+                <con2:id>_ActionId-2267027235222698888-44ab630.14255b9064f.-7407</con2:id>
+                <con6:expr>
+                  <con7:xqueryTransform xmlns:con7="http://www.bea.com/wli/sb/stages/config">
+                    <con7:resource ref="Common/error/xquery/SoapFaultServiceFailure"/>
+                    <con7:param name="osbfault">
+                      <con7:path>$body/errorData/fault/ctx:fault</con7:path>
+                    </con7:param>
+                    <con7:param name="soapbody">
+                      <con7:path>$body/errorData/body/soap-env:Body</con7:path>
+                    </con7:param>
+                    <con7:param name="osboutbound">
+                      <con7:path>$body/errorData/outbound/ctx:endpoint</con7:path>
+                    </con7:param>
+                    <con7:param name="guuid">
+                      <con7:path>$body/errorData/header/soap-env:Header/ouh:Header/CorrelationId/text()</con7:path>
+                    </con7:param>
+                    <con7:param name="osbinbound">
+                      <con7:path>$body/errorData/inbound/ctx:endpoint</con7:path>
+                    </con7:param>
+                  </con7:xqueryTransform>
+                </con6:expr>
+              </con6:assign>
+            </con3:default>
+          </con3:ifThenElse>
+        </con1:actions>
+      </con1:stage>
+      <con1:stage name="LogError">
+        <con1:context>
+          <con2:userNsDecl namespace="http://open.ac.uk/header/" prefix="ouh"/>
+        </con1:context>
+        <con1:actions>
+          <con3:assign varName="serviceName">
+            <con2:id>_ActionId-4260785351339115075--f5a171a.144c0d5c11f.-7f04</con2:id>
+            <con3:expr>
+              <con2:xqueryText>fn:tokenize($body/errorData/inbound/*:endpoint/@name,'\$')[last()]</con2:xqueryText>
+            </con3:expr>
+          </con3:assign>
+          <con3:assign varName="tier">
+            <con2:id>_ActionId-8918480006668621129--64056cbc.144bfc7805c.-7be8</con2:id>
+            <con3:expr>
+              <con2:xqueryTransform>
+                <con2:resource ref="Common/error/config/ServiceTier"/>
+                <con2:param name="proxy">
+                  <con2:path>$serviceName</con2:path>
+                </con2:param>
+              </con2:xqueryTransform>
+            </con3:expr>
+          </con3:assign>
+          <con3:ifThenElse>
+            <con2:id>_ActionId-4260785351339115075--f5a171a.144c0d5c11f.-7f78</con2:id>
+            <con3:case>
+              <con3:condition>
+                <con2:xqueryText>$tier != 'None'</con2:xqueryText>
+              </con3:condition>
+              <con3:actions>
+                <con3:ifThenElse>
+                  <con2:id>_ActionId-4260785351339115075--f5a171a.144c0d5c11f.-7f3e</con2:id>
+                  <con3:case>
+                    <con3:condition>
+                      <con2:xqueryText>xs:int($tier) &lt; 3</con2:xqueryText>
+                    </con3:condition>
+                    <con3:actions>
+                      <con4:log xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+                        <con2:id>_ActionId-4260785351339115075--f5a171a.144c0d5c11f.-7bc4</con2:id>
+                        <con4:logLevel>error</con4:logLevel>
+                        <con4:expr>
+                          <con2:xqueryTransform>
+                            <con2:resource ref="Common/error/xquery/LogError"/>
+                            <con2:param name="correlationId">
+                              <con2:path>$body/errorData/header/soap-env:Header/ouh:Header/CorrelationId/text()</con2:path>
+                            </con2:param>
+                            <con2:param name="serviceName">
+                              <con2:path>$serviceName</con2:path>
+                            </con2:param>
+                            <con2:param name="tier">
+                              <con2:path>$tier</con2:path>
+                            </con2:param>
+                          </con2:xqueryTransform>
+                        </con4:expr>
+                        <con4:message>OSB Error Alert Critical</con4:message>
+                      </con4:log>
+                    </con3:actions>
+                  </con3:case>
+                  <con3:default>
+                    <con4:log>
+                      <con2:id>_ActionId-4260785351339115075--f5a171a.144c0d5c11f.-7b54</con2:id>
+                      <con4:logLevel>warning</con4:logLevel>
+                      <con4:expr>
+                        <con2:xqueryTransform>
+                          <con2:resource ref="Common/error/xquery/LogError"/>
+                          <con2:param name="correlationId">
+                            <con2:path>$body/errorData/header/soap-env:Header/ouh:Header/CorrelationId/text()</con2:path>
+                          </con2:param>
+                          <con2:param name="serviceName">
+                            <con2:path>$serviceName</con2:path>
+                          </con2:param>
+                          <con2:param name="tier">
+                            <con2:path>$tier</con2:path>
+                          </con2:param>
+                        </con2:xqueryTransform>
+                      </con4:expr>
+                      <con4:message>OSB Error Alert Warning</con4:message>
+                    </con4:log>
+                  </con3:default>
+                </con3:ifThenElse>
+              </con3:actions>
+            </con3:case>
+          </con3:ifThenElse>
+        </con1:actions>
+      </con1:stage>
+      <con1:stage name="RecodAudit">
+        <con1:context>
+          <con2:userNsDecl namespace="http://open.ac.uk/header/" prefix="ouh"/>
+          <con2:varNsDecl namespace="http://open.ac.uk/fault/" prefix="faul"/>
+          <con2:varNsDecl namespace="http://open.ac.uk/audit/" prefix="aud"/>
+        </con1:context>
+        <con1:actions>
+          <con3:assign varName="audit" xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+            <con2:id>_ActionId-2267027235222698888-44ab630.14255b9064f.-71bf</con2:id>
+            <con3:expr>
+              <con2:xqueryTransform>
+                <con2:resource ref="Common/error/xquery/AuditError"/>
+                <con2:param name="outbound">
+                  <con2:path>$body/errorData/outbound/ctx:endpoint</con2:path>
+                </con2:param>
+                <con2:param name="soapFault">
+                  <con2:path>$soapFault</con2:path>
+                </con2:param>
+                <con2:param name="body">
+                  <con2:path>$body/errorData/storeBody/soap-env:Body</con2:path>
+                </con2:param>
+                <con2:param name="header">
+                  <con2:path>$body/errorData/header/soap-env:Header</con2:path>
+                </con2:param>
+              </con2:xqueryTransform>
+            </con3:expr>
+          </con3:assign>
+        </con1:actions>
+      </con1:stage>
+      <con1:stage name="ResetBody">
+        <con1:context/>
+        <con1:actions>
+          <con3:assign varName="body" xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+            <con2:id>_ActionId-2267027235222698888-44ab630.14255b9064f.-7113</con2:id>
+            <con3:expr>
+              <con2:xqueryText><![CDATA[<soap-env:Body>
+<errorDataResponse>
+	<audit>{$audit}</audit>	
+	<soapFault>{$soapFault}</soapFault>
+</errorDataResponse>
+</soap-env:Body>]]></con2:xqueryText>
+            </con3:expr>
+          </con3:assign>
+        </con1:actions>
+      </con1:stage>
+    </con1:pipeline>
+    <con1:pipeline type="response" name="FaultHandlerPipe_response"/>
+    <con1:flow>
+      <con1:pipeline-node name="FaultHandlerPipe">
+        <con1:request>FaultHandlerPipe_request</con1:request>
+        <con1:response>FaultHandlerPipe_response</con1:response>
+      </con1:pipeline-node>
+    </con1:flow>
+  </ser:router>
+</xml-fragment>

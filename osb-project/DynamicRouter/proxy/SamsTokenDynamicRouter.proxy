@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-fragment xmlns:ser="http://www.bea.com/wli/sb/services" xmlns:tran="http://www.bea.com/wli/sb/transports" xmlns:env="http://www.bea.com/wli/config/env" xmlns:http="http://www.bea.com/wli/sb/transports/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config">
+  <ser:coreEntry isProxy="true" isEnabled="true">
+    <ser:description><![CDATA[Never deploy to LIVE, used for testing only. Expects the following XML in the SOAP header:
+<ctx:route>
+    <ctx:service isProxy=”true|false”>{$proxy|$businessService}</ctx:service>
+    <!– Optional : –>
+    <ctx:operation>OperationName</ctx:operation>
+</ctx:route>]]></ser:description>
+    <ser:binding type="abstract SOAP" isSoap12="false" xsi:type="con:AnySoapBindingType" xmlns:con="http://www.bea.com/wli/sb/services/bindings/config"/>
+    <ser:monitoring isEnabled="false">
+      <ser:aggregationInterval>10</ser:aggregationInterval>
+      <ser:pipelineMonitoringLevel>Pipeline</ser:pipelineMonitoringLevel>
+    </ser:monitoring>
+    <ser:reporting>true</ser:reporting>
+    <ser:logging isEnabled="true">
+      <ser:logLevel>debug</ser:logLevel>
+    </ser:logging>
+    <ser:sla-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:sla-alerting>
+    <ser:pipeline-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:pipeline-alerting>
+    <ser:ws-policy>
+      <ser:binding-mode>service-policy-bindings</ser:binding-mode>
+      <ser:policies/>
+    </ser:ws-policy>
+  </ser:coreEntry>
+  <ser:endpointConfig>
+    <tran:provider-id>http</tran:provider-id>
+    <tran:inbound>true</tran:inbound>
+    <tran:URI>
+      <env:value>/osb/SamsTokenDynamicRouter/1.0</env:value>
+    </tran:URI>
+    <tran:inbound-properties/>
+    <tran:all-headers>false</tran:all-headers>
+    <tran:provider-specific>
+      <http:inbound-properties/>
+    </tran:provider-specific>
+  </ser:endpointConfig>
+  <ser:router errorHandler="_onErrorHandler-7060605156722513347-621cb868.14304cd2bec.-7ea7">
+    <con:pipeline type="request" name="SamsTokenDynamicRouterPipe_request">
+      <con:stage name="GetSamsToken">
+        <con:context xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/typesystem/config"/>
+        <con:actions xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/typesystem/config">
+          <con3:wsCallout>
+            <con2:id>_ActionId-7771031904783766333-e18ca3c.14293a3b34e.-789b</con2:id>
+            <con3:service xsi:type="ref:ProxyRef" ref="Sams/proxy/AuthServiceInternal" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+            <con3:operation>AuthenticateUser</con3:operation>
+            <con3:request>
+              <con3:body>$request</con3:body>
+              <con3:header>$header</con3:header>
+            </con3:request>
+            <con3:response>
+              <con3:body>samsResponse</con3:body>
+              <con3:header>responseheader</con3:header>
+            </con3:response>
+            <con3:requestTransform>
+              <con1:assign varName="store" xmlns:con3="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config">
+                <con2:id>_ActionId-7771031904783766333-e18ca3c.14293a3b34e.-789c</con2:id>
+                <con1:expr>
+                  <con2:xqueryTransform>
+                    <con2:resource ref="Common/audit/xquery/Store"/>
+                    <con2:param name="endpoint">
+                      <con2:path>$outbound</con2:path>
+                    </con2:param>
+                    <con2:param name="body">
+                      <con2:path>$body</con2:path>
+                    </con2:param>
+                    <con2:param name="header">
+                      <con2:path>$header</con2:path>
+                    </con2:param>
+                  </con2:xqueryTransform>
+                </con1:expr>
+              </con1:assign>
+            </con3:requestTransform>
+            <con3:responseTransform/>
+          </con3:wsCallout>
+        </con:actions>
+      </con:stage>
+    </con:pipeline>
+    <con:pipeline type="response" name="SamsTokenDynamicRouterPipe_response"/>
+    <con:pipeline type="error" name="_onErrorHandler-7060605156722513347-621cb868.14304cd2bec.-7ea7">
+      <con:stage name="ReturnSuccess">
+        <con:context/>
+        <con:actions>
+          <con2:reply>
+            <con2:id>_ActionId-7060605156722513347-621cb868.14304cd2bec.-7dcd</con2:id>
+          </con2:reply>
+        </con:actions>
+      </con:stage>
+    </con:pipeline>
+    <con:flow>
+      <con:pipeline-node name="SamsTokenDynamicRouterPipe">
+        <con:request>SamsTokenDynamicRouterPipe_request</con:request>
+        <con:response>SamsTokenDynamicRouterPipe_response</con:response>
+      </con:pipeline-node>
+      <con:route-node name="DynamicRouteFromHeader">
+        <con:context>
+          <con2:userNsDecl namespace="http://www.open.ac.uk/SAMS/AuthService/" prefix="aut"/>
+        </con:context>
+        <con:actions>
+          <con1:dynamic-route>
+            <con2:id>_ActionId-7960899725651616877--e3b9873.1414ea758e9.-7e3f</con2:id>
+            <con1:service>
+              <con2:xqueryText>$header/ctx:route</con2:xqueryText>
+            </con1:service>
+            <con1:outboundTransform>
+              <con3:assign varName="header" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/typesystem/config">
+                <con2:id>_ActionId-7771031904783766333-e18ca3c.14293a3b34e.-763c</con2:id>
+                <con3:expr>
+                  <con2:xqueryTransform>
+                    <con2:resource ref="Common/header/xquery/AddHeader"/>
+                    <con2:param name="header">
+                      <con2:path>$header</con2:path>
+                    </con2:param>
+                  </con2:xqueryTransform>
+                </con3:expr>
+              </con3:assign>
+              <con3:transport-headers copy-all="false" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/typesystem/config">
+                <con2:id>_ActionId-7771031904783766333-e18ca3c.14293a3b34e.-7847</con2:id>
+                <con3:header-set>outbound-request</con3:header-set>
+                <con3:header value="expression" name="Cookie">
+                  <con2:xqueryTransform>
+                    <con2:resource ref="Sams/xquery/SamsCookie"/>
+                    <con2:param name="samsToken">
+                      <con2:path>$samsResponse/aut:token/text()</con2:path>
+                    </con2:param>
+                  </con2:xqueryTransform>
+                </con3:header>
+              </con3:transport-headers>
+            </con1:outboundTransform>
+            <con1:responseTransform/>
+          </con1:dynamic-route>
+        </con:actions>
+      </con:route-node>
+    </con:flow>
+  </ser:router>
+</xml-fragment>

@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-fragment xmlns:ser="http://www.bea.com/wli/sb/services" xmlns:tran="http://www.bea.com/wli/sb/transports" xmlns:env="http://www.bea.com/wli/config/env" xmlns:http="http://www.bea.com/wli/sb/transports/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:con1="http://www.bea.com/wli/sb/stages/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config">
+  <ser:coreEntry isProxy="true" isEnabled="true">
+    <ser:description>Stub Service, for testing only</ser:description>
+    <ser:binding type="SOAP" isSoap12="false" xsi:type="con:SoapBindingType" xmlns:con="http://www.bea.com/wli/sb/services/bindings/config">
+      <con:wsdl ref="ServiceRepository/Product/GetProductPresentationByDate/wsdl/GetProductPresentationByDateServiceV2.0"/>
+      <con:port>
+        <con:name>BasicHttpBinding_IGetProductPresentationByDateService</con:name>
+        <con:namespace>http://open.ac.uk/Product/GetProductPresentation</con:namespace>
+      </con:port>
+      <con:selector type="SOAP body"/>
+    </ser:binding>
+    <ser:monitoring isEnabled="true">
+      <ser:aggregationInterval>10</ser:aggregationInterval>
+      <ser:pipelineMonitoringLevel>Pipeline</ser:pipelineMonitoringLevel>
+    </ser:monitoring>
+    <ser:reporting>true</ser:reporting>
+    <ser:logging isEnabled="true">
+      <ser:logLevel>debug</ser:logLevel>
+    </ser:logging>
+    <ser:sla-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:sla-alerting>
+    <ser:pipeline-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:pipeline-alerting>
+    <ser:ws-policy>
+      <ser:binding-mode>wsdl-policy-attachments</ser:binding-mode>
+    </ser:ws-policy>
+  </ser:coreEntry>
+  <ser:endpointConfig>
+    <tran:provider-id>http</tran:provider-id>
+    <tran:inbound>true</tran:inbound>
+    <tran:URI>
+      <env:value>/osb/Product/GetProductPresentationByDate/2.0</env:value>
+    </tran:URI>
+    <tran:inbound-properties/>
+    <tran:all-headers>false</tran:all-headers>
+    <tran:provider-specific>
+      <http:inbound-properties/>
+    </tran:provider-specific>
+  </ser:endpointConfig>
+  <ser:router errorHandler="_onErrorHandler-7262987329983681793--16e2fac6.147255cd93b.-7fff">
+    <con:pipeline type="error" name="_onErrorHandler-7262987329983681793--16e2fac6.147255cd93b.-7fff">
+      <con:stage name="RecordSoapFault">
+        <con:context xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+          <con6:userNsDecl namespace="http://open.ac.uk/header/" prefix="ouh" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+          <con6:varNsDecl namespace="http://open.ac.uk/audit/" prefix="aud" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+          <con6:varNsDecl namespace="http://www.open.ac.uk/voice/webservices/ouvoicegetcontactws" prefix="ouv" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+          <con6:variable name="store" path="$store" asChild="false" xmlns:con6="http://www.bea.com/wli/sb/typesystem/config">
+            <con6:schema ref="ServiceRepository/ouosb/xsd/Audit" element="Audit"/>
+          </con6:variable>
+        </con:context>
+        <con:actions xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+          <con6:assign varName="faultRequest" xmlns:con6="http://www.bea.com/wli/sb/stages/transform/config">
+            <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-7262987329983681793--16e2fac6.147255cd93b.-7f8a</con7:id>
+            <con6:expr>
+              <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config"><![CDATA[<errorData>
+	<header>
+	{
+	if (fn:exists($store/soap-env:Header)) then 
+        $store/soap-env:Header
+    else $header
+    }
+	</header>	
+	<body>{$body}</body>
+	<storeBody>
+	{
+	if (fn:exists($store/soap-env:Body)) then 
+        $store/soap-env:Body
+    else $body
+    }
+	</storeBody>
+	<inbound>{$inbound}</inbound>
+	<outbound>{$store/ctx:endpoint}</outbound>
+	<fault>{$fault}</fault>
+</errorData>]]></con6:xqueryText>
+            </con6:expr>
+          </con6:assign>
+          <con6:wsCallout xmlns:con6="http://www.bea.com/wli/sb/stages/transform/config">
+            <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-7262987329983681793--16e2fac6.147255cd93b.-7f89</con7:id>
+            <con6:service xsi:type="ref:ProxyRef" ref="Common/error/proxy/FaultHandler" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+            <con6:request>
+              <con6:payload>$faultRequest</con6:payload>
+            </con6:request>
+            <con6:response>
+              <con6:payload>faultResponse</con6:payload>
+            </con6:response>
+            <con6:requestTransform/>
+            <con6:responseTransform/>
+          </con6:wsCallout>
+          <con6:assign varName="header" xmlns:con6="http://www.bea.com/wli/sb/stages/transform/config">
+            <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-7262987329983681793--16e2fac6.147255cd93b.-7f88</con7:id>
+            <con6:expr>
+              <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$faultResponse/audit/*:Audit/soap-env:Header</con6:xqueryText>
+            </con6:expr>
+          </con6:assign>
+          <con4:report>
+            <con6:id xmlns:con6="http://www.bea.com/wli/sb/stages/config">_ActionId-7262987329983681793--16e2fac6.147255cd93b.-7f87</con6:id>
+            <con4:expr>
+              <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$faultResponse/audit/*</con6:xqueryText>
+            </con4:expr>
+            <con4:labels>
+              <con4:key>Error</con4:key>
+              <con4:varName>fault</con4:varName>
+              <con4:value>
+                <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">./ctx:errorCode</con6:xpathText>
+              </con4:value>
+            </con4:labels>
+            <con4:labels>
+              <con4:key>Id</con4:key>
+              <con4:varName>header</con4:varName>
+              <con4:value>
+                <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">ouh:Header/CorrelationId</con6:xpathText>
+              </con4:value>
+            </con4:labels>
+          </con4:report>
+        </con:actions>
+      </con:stage>
+      <con:stage name="ReturnFaultToClient">
+        <con:context xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+          <con6:varNsDecl namespace="http://lv.com/osb/report/" prefix="rep" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+          <con6:varNsDecl namespace="http://www.open.ac.uk/voice/webservices/ouvoicegetcontactws" prefix="ouv" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+        </con:context>
+        <con:actions xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+          <con6:replace contents-only="true" varName="body" xmlns:con6="http://www.bea.com/wli/sb/stages/transform/config">
+            <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-7262987329983681793--16e2fac6.147255cd93b.-7f16</con7:id>
+            <con6:expr>
+              <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$faultResponse/soapFault/*</con6:xqueryText>
+            </con6:expr>
+          </con6:replace>
+          <con6:reply isError="true" xmlns:con6="http://www.bea.com/wli/sb/stages/config">
+            <con6:id>_ActionId-7262987329983681793--16e2fac6.147255cd93b.-7f15</con6:id>
+          </con6:reply>
+        </con:actions>
+      </con:stage>
+    </con:pipeline>
+    <con:pipeline type="request" name="GetProductPresentationPipe_request">
+      <con:stage name="AddHeader" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+        <con6:context xmlns:con5="http://www.bea.com/wli/sb/stages/alert/config" xmlns:con6="http://www.bea.com/wli/sb/pipeline/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config">
+          <con4:userNsDecl namespace="http://open.ac.uk/header/" prefix="ouh" xmlns:con4="http://www.bea.com/wli/sb/stages/config"/>
+          <con5:varNsDecl namespace="http://open.ac.uk/Student/ManageStudentSSTAllocation" prefix="ns" xmlns:con5="http://www.bea.com/wli/sb/stages/config"/>
+          <con5:varNsDecl namespace="http://open.ac.uk/schema/RequestHeader" prefix="ns1" xmlns:con5="http://www.bea.com/wli/sb/stages/config"/>
+          <con6:varNsDecl namespace="http://open.ac.uk/Student/SST/GetStudentProductSSTAllocation" prefix="get" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+          <con6:varNsDecl namespace="http://open.ac.uk/Student/GetStudentProductSSTAllocation" prefix="get1" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+        </con6:context>
+        <con6:actions xmlns:con5="http://www.bea.com/wli/sb/stages/alert/config" xmlns:con6="http://www.bea.com/wli/sb/pipeline/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config">
+          <con4:assign varName="header" xmlns:con4="http://www.bea.com/wli/sb/stages/transform/config">
+            <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-7262987329983681793--16e2fac6.147255cd93b.-7ead</con7:id>
+            <con4:expr>
+              <con5:xqueryTransform xmlns:con5="http://www.bea.com/wli/sb/stages/config">
+                <con5:resource ref="Common/header/xquery/AddHeader"/>
+                <con5:param name="header">
+                  <con5:path>$header</con5:path>
+                </con5:param>
+              </con5:xqueryTransform>
+            </con4:expr>
+          </con4:assign>
+        </con6:actions>
+      </con:stage>
+      <con:stage name="ValidateMsg" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+        <con:context xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config">
+          <con5:userNsDecl namespace="http://open.ac.uk/header/" prefix="ouh" xmlns:con5="http://www.bea.com/wli/sb/stages/config"/>
+        </con:context>
+        <con:actions xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config">
+          <con5:assign varName="validate" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con6="http://www.bea.com/wli/sb/pipeline/config">
+            <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-7262987329983681793--16e2fac6.147255cd93b.-7ea7</con7:id>
+            <con5:expr>
+              <con7:xqueryTransform xmlns:con7="http://www.bea.com/wli/sb/stages/config">
+                <con7:resource ref="GetProductPresentationByDate/xquery/ConfigXml"/>
+                <con7:param name="key">
+                  <con7:path>'validate'</con7:path>
+                </con7:param>
+              </con7:xqueryTransform>
+            </con5:expr>
+          </con5:assign>
+          <con3:ifThenElse>
+            <con5:id xmlns:con5="http://www.bea.com/wli/sb/stages/config">_ActionId-7262987329983681793--16e2fac6.147255cd93b.-7ea6</con5:id>
+            <con3:case>
+              <con3:condition>
+                <con5:xqueryText xmlns:con5="http://www.bea.com/wli/sb/stages/config">$validate = 'true'</con5:xqueryText>
+              </con3:condition>
+              <con3:actions>
+                <con3:ifThenElse>
+                  <con5:id xmlns:con5="http://www.bea.com/wli/sb/stages/config">_ActionId-7262987329983681793--16e2fac6.147255cd93b.-7ea5</con5:id>
+                  <con3:case>
+                    <con3:condition>
+                      <con5:xqueryText xmlns:con5="http://www.bea.com/wli/sb/stages/config">$operation = 'GetProductPresentationByDate'</con5:xqueryText>
+                    </con3:condition>
+                    <con3:actions>
+                      <con3:validate>
+                        <con5:id xmlns:con5="http://www.bea.com/wli/sb/stages/config">_ActionId-7262987329983681793--16e2fac6.147255cd93b.-7ea4</con5:id>
+                        <con3:schema ref="ServiceRepository/Product/GetProductPresentationByDate/wsdl/ProductPresentationV2.0"/>
+                        <con3:schemaElement xmlns:prod="http://open.ac.uk/Product/ProductPresentation">prod:GetProductPresentationByDateRequest</con3:schemaElement>
+                        <con3:varName>body</con3:varName>
+                        <con3:location>
+                          <con5:xpathText xmlns:con5="http://www.bea.com/wli/sb/stages/config">./*</con5:xpathText>
+                        </con3:location>
+                      </con3:validate>
+                    </con3:actions>
+                  </con3:case>
+                  <con3:case>
+                    <con3:condition>
+                      <con5:xqueryText xmlns:con5="http://www.bea.com/wli/sb/stages/config">$operation = 'GetProductPresentationByMopi'</con5:xqueryText>
+                    </con3:condition>
+                    <con3:actions>
+                      <con5:validate xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con6="http://www.bea.com/wli/sb/pipeline/config">
+                        <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-7262987329983681793--16e2fac6.147255cd93b.-7ea3</con7:id>
+                        <con5:schema ref="ServiceRepository/Product/GetProductPresentationByDate/wsdl/ProductPresentationV2.0"/>
+                        <con5:schemaElement xmlns:man="http://open.ac.uk/Student/ManageStudentSSTAllocation" xmlns:get="http://open.ac.uk/Student/SST/GetStudentProductSSTAllocation" xmlns:get1="http://open.ac.uk/Student/GetStudentProductSSTAllocation" xmlns:get2="http://open.ac.uk/Contact/GetCRMActivityList" xmlns:get3="http://open.ac.uk/Contact/GetCRMActivityOwners" xmlns:get4="http://open.ac.uk/Product/GetProductId" xmlns:get5="http://open.ac.uk/Product/GetProduct" xmlns:prod="http://open.ac.uk/Product/ProductPresentation">prod:GetProductPresentationByMopiRequest</con5:schemaElement>
+                        <con5:varName>body</con5:varName>
+                        <con5:location>
+                          <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">./*</con6:xpathText>
+                        </con5:location>
+                      </con5:validate>
+                    </con3:actions>
+                  </con3:case>
+                  <con3:default/>
+                </con3:ifThenElse>
+              </con3:actions>
+            </con3:case>
+          </con3:ifThenElse>
+        </con:actions>
+      </con:stage>
+      <con:stage name="Convert2.0-1.0">
+        <con:context>
+          <con1:varNsDecl namespace="http://open.ac.uk/Product/ProductPresentation" prefix="prod"/>
+        </con:context>
+        <con:actions>
+          <con2:assign varName="mopiResponseV1">
+            <con1:id>_ActionId-8000428125430717810-3f67b199.147342cb6ea.-7f8f</con1:id>
+            <con2:expr>
+              <con1:xqueryText><![CDATA[<GetProductPresentationByMopiResponse xmlns="http://open.ac.uk/Product/ProductPresentation">
+			<Products xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+				<Product>
+					<GeographicalArea>
+						<geographicalAreaId xmlns:a="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+					</GeographicalArea>
+					<Module>
+						<creditsValue>60</creditsValue>
+						<studyLevelClassification>3</studyLevelClassification>
+					</Module>
+					<ProductPresentation>
+						<ModulePresentation>
+							<finalDeferralDate>0001-01-01T00:00:00</finalDeferralDate>
+							<modulePresStatus>3</modulePresStatus>
+							<presentationFinishDate>2016-06-30T00:00:00</presentationFinishDate>
+							<presentationStartDate>2015-10-03T00:00:00</presentationStartDate>
+							<reservationOpenDate>0001-01-01T00:00:00</reservationOpenDate>
+						</ModulePresentation>
+						<Presentation>
+							<ModuleTypePresentation>
+								<defaultPresentationStartDate>0001-01-01T00:00:00</defaultPresentationStartDate>
+								<mopi>J</mopi>
+								<presentationStartMonth>10</presentationStartMonth>
+								<presentationStartYear>2015</presentationStartYear>
+							</ModuleTypePresentation>
+							<presentationType>1</presentationType>
+						</Presentation>
+						<presentationId>323</presentationId>
+					</ProductPresentation>
+					<productCode>S317</productCode>
+					<productId>5590</productId>
+					<productStatus>Planned</productStatus>
+					<productTitle>Biology: Genes and Evolution (working title)</productTitle>
+					<productType>Module</productType>
+				</Product>
+			</Products>
+			<ResponseHeader xmlns:a="http://open.ac.uk/schema/ResponseHeader" xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+				<a:fault xmlns:b="http://open.ac.uk/schema/faults" />
+				<a:id>c427681c-ac05-4163-bfe9-bfa411862af1</a:id>
+			</ResponseHeader>
+		</GetProductPresentationByMopiResponse>]]></con1:xqueryText>
+            </con2:expr>
+          </con2:assign>
+          <con2:replace varName="body" contents-only="false">
+            <con1:id>_ActionId-7262987329983681793--16e2fac6.147255cd93b.-7dbf</con1:id>
+            <con2:location>
+              <con1:xpathText>./*</con1:xpathText>
+            </con2:location>
+            <con2:expr>
+              <con1:xqueryTransform>
+                <con1:resource ref="GetProductPresentationByDate/xquery/MopiV1toV2"/>
+                <con1:param name="getProductPresentationByMopiResponse">
+                  <con1:path>$mopiResponseV1</con1:path>
+                </con1:param>
+              </con1:xqueryTransform>
+            </con2:expr>
+          </con2:replace>
+        </con:actions>
+      </con:stage>
+    </con:pipeline>
+    <con:pipeline type="response" name="GetProductPresentationPipe_response"/>
+    <con:flow>
+      <con:pipeline-node name="GetProductPresentationPipe">
+        <con:request>GetProductPresentationPipe_request</con:request>
+        <con:response>GetProductPresentationPipe_response</con:response>
+      </con:pipeline-node>
+    </con:flow>
+  </ser:router>
+</xml-fragment>

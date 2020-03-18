@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Temporary storage of Map. Used internally, not required to be held centrally 
+	
+	Author: simon Cutts -->
+	
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://open.ac.uk/rest/Map/"
+	targetNamespace="http://open.ac.uk/rest/Map/">
+
+	<element name="Map" type="tns:MapType" />
+
+	<complexType name="MapType">
+		<sequence>
+			<element name="Entry" type="tns:EntryType" maxOccurs="unbounded" />
+		</sequence>
+	</complexType>
+
+	<complexType name="EntryType">
+		<sequence>
+			<element name="Key" type="string" />
+			<element name="Value" type="string" />
+		</sequence>
+	</complexType>
+
+</schema>

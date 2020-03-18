@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-fragment xmlns:ser="http://www.bea.com/wli/sb/services" xmlns:tran="http://www.bea.com/wli/sb/transports" xmlns:env="http://www.bea.com/wli/config/env" xmlns:http="http://www.bea.com/wli/sb/transports/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/typesystem/config" xmlns:con4="http://www.bea.com/wli/sb/stages/transform/config">
+  <ser:coreEntry isProxy="true" isEnabled="true">
+    <ser:description>Places messages on JMS Topic. Used for testing only!</ser:description>
+    <ser:binding type="SOAP" isSoap12="false" xsi:type="con:SoapBindingType" xmlns:con="http://www.bea.com/wli/sb/services/bindings/config">
+      <con:wsdl ref="Event/wsdl/Student"/>
+      <con:port>
+        <con:name>StudentSOAP</con:name>
+        <con:namespace>http://www.example.org/Student/wsdl/</con:namespace>
+      </con:port>
+      <con:selector type="SOAP body"/>
+    </ser:binding>
+    <ser:monitoring isEnabled="true">
+      <ser:aggregationInterval>10</ser:aggregationInterval>
+      <ser:pipelineMonitoringLevel>Pipeline</ser:pipelineMonitoringLevel>
+    </ser:monitoring>
+    <ser:reporting>true</ser:reporting>
+    <ser:logging isEnabled="true">
+      <ser:logLevel>debug</ser:logLevel>
+    </ser:logging>
+    <ser:sla-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:sla-alerting>
+    <ser:pipeline-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:pipeline-alerting>
+    <ser:ws-policy>
+      <ser:binding-mode>wsdl-policy-attachments</ser:binding-mode>
+    </ser:ws-policy>
+  </ser:coreEntry>
+  <ser:endpointConfig>
+    <tran:provider-id>http</tran:provider-id>
+    <tran:inbound>true</tran:inbound>
+    <tran:URI>
+      <env:value>/osb/Event/1.0</env:value>
+    </tran:URI>
+    <tran:inbound-properties/>
+    <tran:all-headers>false</tran:all-headers>
+    <tran:provider-specific>
+      <http:inbound-properties/>
+    </tran:provider-specific>
+  </ser:endpointConfig>
+  <ser:router>
+    <con:pipeline type="request" name="EventPipe_request">
+      <con:stage name="AddHeader">
+        <con:context>
+          <con2:userNsDecl namespace="http://open.ac.uk/header/" prefix="ouh"/>
+          <con2:varNsDecl namespace="http://open.ac.uk/audit/service" prefix="ser"/>
+          <con3:variable name="serviceAudit" path="$serviceAudit" asChild="false">
+            <con3:schema ref="ServiceRepository/ouosb/xsd/ServiceAudit" element="ServiceAudit"/>
+          </con3:variable>
+        </con:context>
+        <con:actions>
+          <con3:assign varName="header" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con5="http://www.bea.com/wli/sb/stages/alert/config">
+            <con2:id>_ActionId-62230334746156493--18ab3970.1413545adea.-7cd7</con2:id>
+            <con4:expr>
+              <con5:xqueryTransform xmlns:con5="http://www.bea.com/wli/sb/stages/config">
+                <con5:resource ref="Common/header/xquery/AddHeader"/>
+                <con5:param name="header">
+                  <con5:path>$header</con5:path>
+                </con5:param>
+              </con5:xqueryTransform>
+            </con4:expr>
+          </con3:assign>
+          <con2:assign varName="serviceAudit" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:jms="http://www.bea.com/wli/sb/transports/jms" xmlns:con1="http://www.bea.com/wli/sb/stages/config">
+            <con1:id>_ActionId-62230334746156493--18ab3970.1413545adea.-7c66</con1:id>
+            <con5:expr>
+              <con1:xqueryTransform>
+                <con1:resource ref="Common/audit/xquery/ServiceAuditRequest"/>
+                <con1:param name="requestHeader">
+                  <con1:path>$header/.</con1:path>
+                </con1:param>
+                <con1:param name="event">
+                  <con1:path>'Inbound'</con1:path>
+                </con1:param>
+                <con1:param name="requestBody">
+                  <con1:path>$body</con1:path>
+                </con1:param>
+                <con1:param name="responseHeader">
+                  <con1:path>$empty</con1:path>
+                </con1:param>
+                <con1:param name="correlationId">
+                  <con1:path>$header/ouh:Header/CorrelationId/text()</con1:path>
+                </con1:param>
+                <con1:param name="responseBody">
+                  <con1:path>$empty</con1:path>
+                </con1:param>
+              </con1:xqueryTransform>
+            </con5:expr>
+          </con2:assign>
+          <con4:report xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:jms="http://www.bea.com/wli/sb/transports/jms">
+            <con2:id>_ActionId-62230334746156493--18ab3970.1413545adea.-7c2d</con2:id>
+            <con4:expr>
+              <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$serviceAudit</con6:xqueryText>
+            </con4:expr>
+            <con4:labels>
+              <con4:key>Evt</con4:key>
+              <con4:varName>serviceAudit</con4:varName>
+              <con4:value>
+                <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">./ser:AuditEvent</con6:xpathText>
+              </con4:value>
+            </con4:labels>
+            <con4:labels>
+              <con4:key>Id</con4:key>
+              <con4:varName>serviceAudit</con4:varName>
+              <con4:value>
+                <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">./ser:CorrelationId</con6:xpathText>
+              </con4:value>
+            </con4:labels>
+          </con4:report>
+        </con:actions>
+      </con:stage>
+    </con:pipeline>
+    <con:pipeline type="response" name="EventPipe_response"/>
+    <con:flow>
+      <con:pipeline-node name="EventPipe">
+        <con:request>EventPipe_request</con:request>
+        <con:response>EventPipe_response</con:response>
+      </con:pipeline-node>
+      <con:route-node name="RouteToBiz">
+        <con:context/>
+        <con:actions>
+          <con1:route>
+            <con2:id>_ActionId-62230334746156493--18ab3970.1413545adea.-7d2b</con2:id>
+            <con1:service ref="Event/biz/Event" xsi:type="ref:BusinessServiceRef" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+            <con1:operation passThrough="true"/>
+            <con1:outboundTransform>
+              <con4:routing-options>
+                <con2:id>_ActionId-62230334746156493--18ab3970.1413545adea.-7c9f</con2:id>
+                <con4:qualityOfService>exactly-once</con4:qualityOfService>
+              </con4:routing-options>
+            </con1:outboundTransform>
+            <con1:responseTransform/>
+          </con1:route>
+        </con:actions>
+      </con:route-node>
+    </con:flow>
+  </ser:router>
+</xml-fragment>

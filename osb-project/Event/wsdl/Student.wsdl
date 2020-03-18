@@ -1,0 +1,37 @@
+<wsdl:definitions name="Student" targetNamespace="http://www.example.org/Student/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:stu="http://www.example.org/Student/wsdl/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsd1="http://www.example.org/Student">
+
+	<wsdl:types>
+		<xsd:schema>
+			<xsd:import namespace="http://www.example.org/Student" schemaLocation="../xsd/Student.xsd">
+			</xsd:import>
+		</xsd:schema>
+	</wsdl:types>
+
+	<wsdl:message name="NewOperationRequest">
+		<wsdl:part element="xsd1:Student" name="parameters"/>
+	</wsdl:message>
+
+	<wsdl:portType name="Student">
+		<wsdl:operation name="NewOperation">
+			<wsdl:input message="stu:NewOperationRequest"/>
+
+		</wsdl:operation>
+	</wsdl:portType>
+
+	<wsdl:binding name="StudentSOAP" type="stu:Student">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+		<wsdl:operation name="NewOperation">
+			<soap:operation soapAction="http://www.example.org/Student/wsdl/NewOperation"/>
+			<wsdl:input>
+				<soap:body use="literal"/>
+			</wsdl:input>
+		</wsdl:operation>
+	</wsdl:binding>
+
+	<wsdl:service name="Student">
+		<wsdl:port binding="stu:StudentSOAP" name="StudentSOAP">
+			<soap:address location="http://www.example.org/"/>
+		</wsdl:port>
+	</wsdl:service>
+
+</wsdl:definitions>

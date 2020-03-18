@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-fragment xmlns:ser="http://www.bea.com/wli/sb/services" xmlns:tran="http://www.bea.com/wli/sb/transports" xmlns:env="http://www.bea.com/wli/config/env" xmlns:http="http://www.bea.com/wli/sb/transports/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config">
+  <ser:coreEntry isProxy="true" isEnabled="true">
+    <ser:description><![CDATA[Never deploy to LIVE, used for testing only. Expects the following XML in the SOAP header:
+<ctx:route>
+    <ctx:service isProxy=”true|false”>{$proxy|$businessService}</ctx:service>
+    <!– Optional : –>
+    <ctx:operation>OperationName</ctx:operation>
+</ctx:route>]]></ser:description>
+    <ser:binding type="abstract SOAP" isSoap12="false" xsi:type="con:AnySoapBindingType" xmlns:con="http://www.bea.com/wli/sb/services/bindings/config"/>
+    <ser:monitoring isEnabled="false">
+      <ser:aggregationInterval>10</ser:aggregationInterval>
+      <ser:pipelineMonitoringLevel>Pipeline</ser:pipelineMonitoringLevel>
+    </ser:monitoring>
+    <ser:reporting>true</ser:reporting>
+    <ser:logging isEnabled="true">
+      <ser:logLevel>debug</ser:logLevel>
+    </ser:logging>
+    <ser:sla-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:sla-alerting>
+    <ser:pipeline-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:pipeline-alerting>
+    <ser:ws-policy>
+      <ser:binding-mode>service-policy-bindings</ser:binding-mode>
+      <ser:policies/>
+    </ser:ws-policy>
+  </ser:coreEntry>
+  <ser:endpointConfig>
+    <tran:provider-id>http</tran:provider-id>
+    <tran:inbound>true</tran:inbound>
+    <tran:URI>
+      <env:value>/osb/DynamicRouter/1.0</env:value>
+    </tran:URI>
+    <tran:inbound-properties/>
+    <tran:all-headers>false</tran:all-headers>
+    <tran:provider-specific>
+      <http:inbound-properties/>
+    </tran:provider-specific>
+  </ser:endpointConfig>
+  <ser:router errorHandler="_onErrorHandler-6130520276484227628-5623da7c.1426fa9f5b3.-7c3c">
+    <con:pipeline type="error" name="_onErrorHandler-6130520276484227628-5623da7c.1426fa9f5b3.-7c3c">
+      <con:stage name="ReturnSuccess">
+        <con:context/>
+        <con:actions>
+          <con2:reply>
+            <con2:id>_ActionId-7060605156722513347-621cb868.14304cd2bec.-7d5e</con2:id>
+          </con2:reply>
+        </con:actions>
+      </con:stage>
+    </con:pipeline>
+    <con:flow>
+      <con:route-node name="DynamicRouteFromHeader">
+        <con:context/>
+        <con:actions>
+          <con1:dynamic-route>
+            <con2:id>_ActionId-7960899725651616877--e3b9873.1414ea758e9.-7e3f</con2:id>
+            <con1:service>
+              <con2:xqueryText>$header/ctx:route</con2:xqueryText>
+            </con1:service>
+            <con1:outboundTransform>
+              <con3:assign varName="header" xmlns:con4="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con5="http://www.bea.com/wli/sb/stages/alert/config" xmlns:con6="http://www.bea.com/wli/sb/pipeline/config">
+                <con2:id>_ActionId-7960899725651616877--e3b9873.1414ea758e9.-7deb</con2:id>
+                <con3:expr>
+                  <con5:xqueryTransform xmlns:con5="http://www.bea.com/wli/sb/stages/config">
+                    <con5:resource ref="Common/header/xquery/AddHeader"/>
+                    <con5:param name="header">
+                      <con5:path>$header</con5:path>
+                    </con5:param>
+                  </con5:xqueryTransform>
+                </con3:expr>
+              </con3:assign>
+            </con1:outboundTransform>
+            <con1:responseTransform/>
+          </con1:dynamic-route>
+        </con:actions>
+      </con:route-node>
+    </con:flow>
+  </ser:router>
+</xml-fragment>

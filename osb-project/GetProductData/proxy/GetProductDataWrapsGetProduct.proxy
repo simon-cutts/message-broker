@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-fragment xmlns:ser="http://www.bea.com/wli/sb/services" xmlns:tran="http://www.bea.com/wli/sb/transports" xmlns:env="http://www.bea.com/wli/config/env" xmlns:http="http://www.bea.com/wli/sb/transports/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:con1="http://www.bea.com/wli/sb/stages/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config">
+  <ser:coreEntry isProxy="true" isEnabled="true">
+    <ser:description>Wraps a GetProductData request around a GetProduct request</ser:description>
+    <ser:binding type="SOAP" isSoap12="false" xsi:type="con:SoapBindingType" xmlns:con="http://www.bea.com/wli/sb/services/bindings/config">
+      <con:wsdl ref="ServiceRepository/Product/GetProductData/wsdl/GetProductDataService.V0.1"/>
+      <con:port>
+        <con:name>BasicHttpBinding_IGetProductDataService</con:name>
+        <con:namespace>http://tempuri.org/</con:namespace>
+      </con:port>
+      <con:selector type="SOAP body"/>
+    </ser:binding>
+    <ser:monitoring isEnabled="true">
+      <ser:aggregationInterval>10</ser:aggregationInterval>
+      <ser:pipelineMonitoringLevel>Pipeline</ser:pipelineMonitoringLevel>
+    </ser:monitoring>
+    <ser:reporting>true</ser:reporting>
+    <ser:logging isEnabled="true">
+      <ser:logLevel>debug</ser:logLevel>
+    </ser:logging>
+    <ser:sla-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:sla-alerting>
+    <ser:pipeline-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:pipeline-alerting>
+    <ser:ws-policy>
+      <ser:binding-mode>wsdl-policy-attachments</ser:binding-mode>
+    </ser:ws-policy>
+  </ser:coreEntry>
+  <ser:endpointConfig>
+    <tran:provider-id>local</tran:provider-id>
+    <tran:inbound>true</tran:inbound>
+    <tran:inbound-properties/>
+    <tran:all-headers>true</tran:all-headers>
+  </ser:endpointConfig>
+  <ser:router errorHandler="_onErrorHandler-2351293945690587361-f8d3019.1405df36639.-7d80">
+    <con:pipeline type="error" name="_onErrorHandler-2351293945690587361-f8d3019.1405df36639.-7d80">
+      <con:stage name="RecordSoapFault">
+        <con:context xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+          <con6:userNsDecl namespace="http://open.ac.uk/header/" prefix="ouh" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+          <con6:varNsDecl namespace="http://open.ac.uk/audit/" prefix="aud" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+          <con6:varNsDecl namespace="http://www.open.ac.uk/voice/webservices/ouvoicegetcontactws" prefix="ouv" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+          <con6:variable name="store" path="$store" asChild="false" xmlns:con6="http://www.bea.com/wli/sb/typesystem/config">
+            <con6:schema ref="ServiceRepository/ouosb/xsd/Audit" element="Audit"/>
+          </con6:variable>
+        </con:context>
+        <con:actions xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+          <con6:assign varName="faultRequest" xmlns:con6="http://www.bea.com/wli/sb/stages/transform/config">
+            <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-7696673444199868766--28667bfc.1426ac021af.-5fe1</con7:id>
+            <con6:expr>
+              <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config"><![CDATA[<errorData>
+	<header>
+	{
+	if (fn:exists($store/soap-env:Header)) then 
+        $store/soap-env:Header
+    else $header
+    }
+	</header>	
+	<body>{$body}</body>
+	<storeBody>
+	{
+	if (fn:exists($store/soap-env:Body)) then 
+        $store/soap-env:Body
+    else $body
+    }
+	</storeBody>
+	<inbound>{$inbound}</inbound>
+	<outbound>{$store/ctx:endpoint}</outbound>
+	<fault>{$fault}</fault>
+</errorData>]]></con6:xqueryText>
+            </con6:expr>
+          </con6:assign>
+          <con6:wsCallout xmlns:con6="http://www.bea.com/wli/sb/stages/transform/config">
+            <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-7696673444199868766--28667bfc.1426ac021af.-5fe0</con7:id>
+            <con6:service xsi:type="ref:ProxyRef" ref="Common/error/proxy/FaultHandler" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+            <con6:request>
+              <con6:payload>$faultRequest</con6:payload>
+            </con6:request>
+            <con6:response>
+              <con6:payload>faultResponse</con6:payload>
+            </con6:response>
+            <con6:requestTransform/>
+            <con6:responseTransform/>
+          </con6:wsCallout>
+          <con6:assign varName="header" xmlns:con6="http://www.bea.com/wli/sb/stages/transform/config">
+            <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-7696673444199868766--28667bfc.1426ac021af.-5fdf</con7:id>
+            <con6:expr>
+              <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$faultResponse/audit/*:Audit/soap-env:Header</con6:xqueryText>
+            </con6:expr>
+          </con6:assign>
+          <con4:report>
+            <con6:id xmlns:con6="http://www.bea.com/wli/sb/stages/config">_ActionId-7696673444199868766--28667bfc.1426ac021af.-5fde</con6:id>
+            <con4:expr>
+              <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$faultResponse/audit/*</con6:xqueryText>
+            </con4:expr>
+            <con4:labels>
+              <con4:key>Error</con4:key>
+              <con4:varName>fault</con4:varName>
+              <con4:value>
+                <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">./ctx:errorCode</con6:xpathText>
+              </con4:value>
+            </con4:labels>
+            <con4:labels>
+              <con4:key>Id</con4:key>
+              <con4:varName>header</con4:varName>
+              <con4:value>
+                <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">ouh:Header/CorrelationId</con6:xpathText>
+              </con4:value>
+            </con4:labels>
+          </con4:report>
+        </con:actions>
+      </con:stage>
+      <con:stage name="ReturnFaultToClient">
+        <con:context xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+          <con6:varNsDecl namespace="http://lv.com/osb/report/" prefix="rep" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+          <con6:varNsDecl namespace="http://www.open.ac.uk/voice/webservices/ouvoicegetcontactws" prefix="ouv" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+        </con:context>
+        <con:actions xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+          <con6:replace contents-only="true" varName="body" xmlns:con6="http://www.bea.com/wli/sb/stages/transform/config">
+            <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-7696673444199868766--28667bfc.1426ac021af.-5f37</con7:id>
+            <con6:expr>
+              <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$faultResponse/soapFault/*</con6:xqueryText>
+            </con6:expr>
+          </con6:replace>
+          <con6:reply isError="true" xmlns:con6="http://www.bea.com/wli/sb/stages/config">
+            <con6:id>_ActionId-7696673444199868766--28667bfc.1426ac021af.-5f36</con6:id>
+          </con6:reply>
+        </con:actions>
+      </con:stage>
+    </con:pipeline>
+    <con:flow>
+      <con:route-node name="RouteToGetProduct">
+        <con:context>
+          <con1:varNsDecl namespace="http://open.ac.uk/Product/GetProductData" prefix="get"/>
+        </con:context>
+        <con:actions>
+          <con1:route xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+            <con2:id xmlns:con2="http://www.bea.com/wli/sb/stages/config">_ActionId-2351293945690587361-f8d3019.1405df36639.-7dbe</con2:id>
+            <con1:service ref="Product/biz/GetProduct" xsi:type="ref:BusinessServiceRef" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+            <con1:operation>GetProduct</con1:operation>
+            <con1:outboundTransform>
+              <con2:replace varName="body">
+                <con3:id xmlns:con3="http://www.bea.com/wli/sb/stages/config">_ActionId-6108507760761205128--597fe984.143d80a3ad7.-7fc9</con3:id>
+                <con2:location>
+                  <con3:xpathText xmlns:con3="http://www.bea.com/wli/sb/stages/config">./*</con3:xpathText>
+                </con2:location>
+                <con2:expr>
+                  <con3:xqueryTransform xmlns:con3="http://www.bea.com/wli/sb/stages/config">
+                    <con3:resource ref="GetProductData/xquery/GetProductRequest"/>
+                    <con3:param name="getProductDataRequest">
+                      <con3:path>$body/get:GetProductDataRequest</con3:path>
+                    </con3:param>
+                  </con3:xqueryTransform>
+                </con2:expr>
+              </con2:replace>
+              <con6:assign varName="store" xmlns:con3="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con6="http://www.bea.com/wli/sb/stages/transform/config">
+                <con2:id>_ActionId-2351293945690587361-f8d3019.1405df36639.-7dbd</con2:id>
+                <con6:expr>
+                  <con2:xqueryTransform>
+                    <con2:resource ref="Common/audit/xquery/Store"/>
+                    <con2:param name="endpoint">
+                      <con2:path>$outbound</con2:path>
+                    </con2:param>
+                    <con2:param name="body">
+                      <con2:path>$body</con2:path>
+                    </con2:param>
+                    <con2:param name="header">
+                      <con2:path>$header</con2:path>
+                    </con2:param>
+                  </con2:xqueryTransform>
+                </con6:expr>
+              </con6:assign>
+            </con1:outboundTransform>
+            <con1:responseTransform>
+              <con2:replace varName="body">
+                <con3:id xmlns:con3="http://www.bea.com/wli/sb/stages/config">_ActionId-6108507760761205128--597fe984.143d80a3ad7.-7f91</con3:id>
+                <con2:location>
+                  <con3:xpathText xmlns:con3="http://www.bea.com/wli/sb/stages/config">./*</con3:xpathText>
+                </con2:location>
+                <con2:expr>
+                  <con3:xqueryTransform xmlns:con3="http://www.bea.com/wli/sb/stages/config">
+                    <con3:resource ref="GetProductData/xquery/GetProductDataResponse"/>
+                    <con3:param name="getProductResponse">
+                      <con3:path>$body/*</con3:path>
+                    </con3:param>
+                  </con3:xqueryTransform>
+                </con2:expr>
+              </con2:replace>
+              <con5:assign varName="header" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con4="http://www.bea.com/wli/sb/typesystem/config" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config">
+                <con2:id>_ActionId-2351293945690587361-f8d3019.1405df36639.-7dbc</con2:id>
+                <con5:expr>
+                  <con2:xqueryText>$store/soap-env:Header</con2:xqueryText>
+                </con5:expr>
+              </con5:assign>
+            </con1:responseTransform>
+          </con1:route>
+        </con:actions>
+      </con:route-node>
+    </con:flow>
+  </ser:router>
+  <!--ALERT_RULE <ser:alertRules xmlns:aler="http://www.bea.com/wli/monitoring/alert" xmlns:ser="http://www.bea.com/wli/sb/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <ser:alertRule name="SLA Exceeded GetProductDataWrapsGetProduct" enabled="true">
+      <aler:description xmlns:aler="http://www.bea.com/wli/monitoring/alert"/>
+      <aler:AlertFrequency xmlns:aler="http://www.bea.com/wli/monitoring/alert">every-time</aler:AlertFrequency>
+      <aler:AlertSeverity xmlns:aler="http://www.bea.com/wli/monitoring/alert">major</aler:AlertSeverity>
+      <aler:StopProcessing xmlns:aler="http://www.bea.com/wli/monitoring/alert">false</aler:StopProcessing>
+      <aler:Condition type="statistics" xmlns:aler="http://www.bea.com/wli/monitoring/alert">
+        <aler:config aggregation-interval="10" xsi:type="mon:monitoringConditionType" xmlns:mon="http://www.bea.com/wli/monitoring/alert/condition/monitoringstatistic">
+          <mon:monCondExpr>
+            <mon:function>average</mon:function>
+            <mon:lhs>Folder$GetProductData$proxy/GetProductDataWrapsGetProduct/Transport/response-time</mon:lhs>
+            <mon:lhs-operand-type>interval</mon:lhs-operand-type>
+            <mon:lhsDisplayName>Response Time</mon:lhsDisplayName>
+            <mon:operator>></mon:operator>
+            <mon:rhs>30000</mon:rhs>
+          </mon:monCondExpr>
+        </aler:config>
+      </aler:Condition>
+      <aler:AlertDestination ref="Common/alert/NagiosAlertDestination" xmlns:aler="http://www.bea.com/wli/monitoring/alert"/>
+      <aler:AlertSummary xsi:nil="true" xmlns:aler="http://www.bea.com/wli/monitoring/alert"/>
+    </ser:alertRule>
+  </ser:alertRules> ALERT_RULE-->
+</xml-fragment>
