@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-fragment xmlns:ser="http://www.bea.com/wli/sb/services" xmlns:tran="http://www.bea.com/wli/sb/transports" xmlns:env="http://www.bea.com/wli/config/env" xmlns:http="http://www.bea.com/wli/sb/transports/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:con="http://www.bea.com/wli/sb/typesystem/config" xmlns:jms="http://www.bea.com/wli/sb/transports/jms" xmlns:con1="http://www.bea.com/wli/sb/pipeline/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config">
+  <ser:coreEntry isProxy="true" isEnabled="true">
+    <ser:binding type="SOAP" isSoap12="false" xsi:type="con4:SoapBindingType" xmlns:con4="http://www.bea.com/wli/sb/services/bindings/config">
+      <con4:wsdl ref="ServiceRepository/Student/StudentModuleEvent/wsdl/StudentModuleEventSoa.1.0"/>
+      <con4:port>
+        <con4:name>CaptureStudentModuleSubscription</con4:name>
+        <con4:namespace>http://open.ac.uk/Student/StudentModuleEventService</con4:namespace>
+      </con4:port>
+      <con4:selector type="SOAP body"/>
+    </ser:binding>
+    <ser:monitoring isEnabled="true">
+      <ser:aggregationInterval>10</ser:aggregationInterval>
+      <ser:pipelineMonitoringLevel>Pipeline</ser:pipelineMonitoringLevel>
+    </ser:monitoring>
+    <ser:reporting>true</ser:reporting>
+    <ser:logging isEnabled="true">
+      <ser:logLevel>debug</ser:logLevel>
+    </ser:logging>
+    <ser:sla-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:sla-alerting>
+    <ser:pipeline-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:pipeline-alerting>
+    <ser:ws-policy>
+      <ser:binding-mode>wsdl-policy-attachments</ser:binding-mode>
+    </ser:ws-policy>
+    <ser:transactions isRequired="true" sameTxForResponse="false"/>
+  </ser:coreEntry>
+  <ser:endpointConfig>
+    <tran:provider-id>jms</tran:provider-id>
+    <tran:inbound>true</tran:inbound>
+    <tran:URI>
+      <env:value>jms://localhost:7001/weblogic.jms.XAConnectionFactory/jms.StudentModuleEventDistributedTopic</env:value>
+    </tran:URI>
+    <tran:inbound-properties/>
+    <tran:all-headers>false</tran:all-headers>
+    <tran:provider-specific>
+      <jms:is-queue>false</jms:is-queue>
+      <jms:is-secure>false</jms:is-secure>
+      <jms:inbound-properties>
+        <jms:response-required>false</jms:response-required>
+        <jms:durable-subscription>true</jms:durable-subscription>
+        <jms:topic-messages-distribution>OneCopyPerApplication</jms:topic-messages-distribution>
+        <jms:XA-required>true</jms:XA-required>
+      </jms:inbound-properties>
+      <jms:request-encoding>UTF-8</jms:request-encoding>
+      <jms:jndi-timeout>0</jms:jndi-timeout>
+    </tran:provider-specific>
+  </ser:endpointConfig>
+  <ser:router errorHandler="_onErrorHandler-7882218060990570734--7ec4b21d.147814290c8.-7fc1">
+    <con1:pipeline type="error" name="_onErrorHandler-7882218060990570734--7ec4b21d.147814290c8.-7fc1">
+      <con1:stage name="RecordSoapFault">
+        <con7:context xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con6="http://www.bea.com/wli/sb/pipeline/config" xmlns:con3="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con1="http://www.bea.com/wli/sb/stages/config" xmlns:con7="http://www.bea.com/wli/sb/pipeline/config">
+          <con6:userNsDecl namespace="http://open.ac.uk/header/" prefix="ouh" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+          <con6:varNsDecl namespace="http://open.ac.uk/audit/" prefix="aud" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+          <con6:varNsDecl namespace="http://www.open.ac.uk/voice/webservices/ouvoicegetcontactws" prefix="ouv" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+          <con6:variable name="store" path="$store" asChild="false" xmlns:con6="http://www.bea.com/wli/sb/typesystem/config">
+            <con6:schema ref="ServiceRepository/ouosb/xsd/Audit" element="Audit"/>
+          </con6:variable>
+        </con7:context>
+        <con7:actions xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con6="http://www.bea.com/wli/sb/pipeline/config" xmlns:con3="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con1="http://www.bea.com/wli/sb/stages/config" xmlns:con7="http://www.bea.com/wli/sb/pipeline/config">
+          <con2:assign varName="faultRequest">
+            <con1:id>_ActionId-7882218060990570734--7ec4b21d.147814290c8.-7f85</con1:id>
+            <con2:expr>
+              <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config"><![CDATA[<errorData>
+	<header>
+	{
+	if (fn:exists($store/soap-env:Header)) then 
+        $store/soap-env:Header
+    else $header
+    }
+	</header>	
+	<body>{$body}</body>
+	<storeBody>
+	{
+	if (fn:exists($store/soap-env:Body)) then 
+        $store/soap-env:Body
+    else $body
+    }
+	</storeBody>
+	<inbound>{$inbound}</inbound>
+	<outbound>{$store/ctx:endpoint}</outbound>
+	<fault>{$fault}</fault>
+</errorData>]]></con6:xqueryText>
+            </con2:expr>
+          </con2:assign>
+          <con2:wsCallout>
+            <con1:id>_ActionId-7882218060990570734--7ec4b21d.147814290c8.-7f84</con1:id>
+            <con2:service xsi:type="ref:ProxyRef" ref="Common/error/proxy/FaultHandler" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+            <con2:request>
+              <con2:payload>$faultRequest</con2:payload>
+            </con2:request>
+            <con2:response>
+              <con2:payload>faultResponse</con2:payload>
+            </con2:response>
+            <con2:requestTransform/>
+            <con2:responseTransform/>
+          </con2:wsCallout>
+          <con2:assign varName="header">
+            <con1:id>_ActionId-7882218060990570734--7ec4b21d.147814290c8.-7f83</con1:id>
+            <con2:expr>
+              <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$faultResponse/audit/*:Audit/soap-env:Header</con6:xqueryText>
+            </con2:expr>
+          </con2:assign>
+          <con3:report>
+            <con1:id>_ActionId-7882218060990570734--7ec4b21d.147814290c8.-7f82</con1:id>
+            <con3:expr>
+              <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$faultResponse/audit/*</con6:xqueryText>
+            </con3:expr>
+            <con3:labels>
+              <con3:key>Error</con3:key>
+              <con3:varName>fault</con3:varName>
+              <con3:value>
+                <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">./ctx:errorCode</con6:xpathText>
+              </con3:value>
+            </con3:labels>
+            <con3:labels>
+              <con3:key>Id</con3:key>
+              <con3:varName>header</con3:varName>
+              <con3:value>
+                <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">ouh:Header/CorrelationId</con6:xpathText>
+              </con3:value>
+            </con3:labels>
+          </con3:report>
+          <con7:Error xmlns:con7="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+            <con8:id xmlns:con8="http://www.bea.com/wli/sb/stages/config">_ActionId-7882218060990570734--7ec4b21d.147814290c8.-7f81</con8:id>
+            <con7:errCode>15??</con7:errCode>
+            <con7:message>Error Code: 15??. Processing of StudentModuleEvent reported a failure. The event will be tried again shortly.</con7:message>
+          </con7:Error>
+        </con7:actions>
+      </con1:stage>
+    </con1:pipeline>
+    <con1:pipeline type="request" name="CaptureStudentModuleChoicePipe_request">
+      <con1:stage name="Audit">
+        <con1:context>
+          <con2:userNsDecl namespace="http://open.ac.uk/header/" prefix="ouh"/>
+        </con1:context>
+        <con1:actions>
+          <con5:assign varName="audit" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con6="http://www.bea.com/wli/sb/pipeline/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con="http://www.bea.com/wli/sb/pipeline/config">
+            <con2:id>_ActionId-7882218060990570734--7ec4b21d.147814290c8.-7c67</con2:id>
+            <con5:expr>
+              <con2:xqueryTransform>
+                <con2:resource ref="StudentModuleEvent/xquery/ConfigXml"/>
+                <con2:param name="key">
+                  <con2:path>'audit'</con2:path>
+                </con2:param>
+              </con2:xqueryTransform>
+            </con5:expr>
+          </con5:assign>
+          <con2:ifThenElse xmlns:con3="http://www.bea.com/wli/sb/typesystem/config" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con6="http://www.bea.com/wli/sb/pipeline/config" xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con1="http://www.bea.com/wli/sb/stages/config">
+            <con1:id>_ActionId-7882218060990570734--7ec4b21d.147814290c8.-7cbd</con1:id>
+            <con2:case>
+              <con2:condition>
+                <con1:xqueryText>$audit = 'true'</con1:xqueryText>
+              </con2:condition>
+              <con2:actions>
+                <con2:assign varName="event">
+                  <con1:id>_ActionId-7882218060990570734--7ec4b21d.147814290c8.-7cbc</con1:id>
+                  <con2:expr>
+                    <con1:xqueryText>&lt;event>Inbound&lt;/event></con1:xqueryText>
+                  </con2:expr>
+                </con2:assign>
+                <con4:report xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+                  <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-7882218060990570734--7ec4b21d.147814290c8.-7cbb</con7:id>
+                  <con4:expr>
+                    <con7:xqueryText xmlns:con7="http://www.bea.com/wli/sb/stages/config">$event</con7:xqueryText>
+                  </con4:expr>
+                  <con4:labels>
+                    <con4:key>Evt</con4:key>
+                    <con4:varName>event</con4:varName>
+                    <con4:value>
+                      <con7:xpathText xmlns:con7="http://www.bea.com/wli/sb/stages/config">.</con7:xpathText>
+                    </con4:value>
+                  </con4:labels>
+                  <con4:labels>
+                    <con4:key>Id</con4:key>
+                    <con4:varName>header</con4:varName>
+                    <con4:value>
+                      <con7:xpathText xmlns:con7="http://www.bea.com/wli/sb/stages/config">./ouh:Header/CorrelationId</con7:xpathText>
+                    </con4:value>
+                  </con4:labels>
+                </con4:report>
+              </con2:actions>
+            </con2:case>
+          </con2:ifThenElse>
+        </con1:actions>
+      </con1:stage>
+      <con1:stage name="CheckOkToProceed">
+        <con1:context>
+          <con2:userNsDecl namespace="http://open.ac.uk/header/" prefix="ouh"/>
+        </con1:context>
+        <con1:actions>
+          <con2:assign varName="payload" xmlns:con3="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/pipeline/config" xmlns:con1="http://www.bea.com/wli/sb/stages/config">
+            <con1:id>_ActionId-5657938995295287530-48fe69f7.14887f4f7f8.-7d7d</con1:id>
+            <con2:expr>
+              <con1:xqueryTransform>
+                <con1:resource ref="StudentModuleEvent/xquery/CaptureStudentModuleSubscription"/>
+                <con1:param name="body">
+                  <con1:path>$body/*</con1:path>
+                </con1:param>
+              </con1:xqueryTransform>
+            </con2:expr>
+          </con2:assign>
+          <con2:validate xmlns:con3="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/pipeline/config" xmlns:con1="http://www.bea.com/wli/sb/stages/config">
+            <con1:id>_ActionId-5657938995295287530-48fe69f7.14887f4f7f8.-7dd1</con1:id>
+            <con2:schema ref="ServiceRepository/Student/StudentModuleEvent/xsd/StudentModuleEvent.1.0"/>
+            <con2:schemaElement xmlns:pric="http://open.ac.uk/product/event/pricing/" xmlns:pric1="http://open.ac.uk/event/product/pricing" xmlns:stud="http://open.ac.uk/Student/StudentModuleEvent">stud:CaptureStudentModuleSubscription</con2:schemaElement>
+            <con2:varName>payload</con2:varName>
+            <con2:location>
+              <con1:xpathText>.</con1:xpathText>
+            </con2:location>
+            <con2:resultVarName>process</con2:resultVarName>
+          </con2:validate>
+          <con3:ifThenElse>
+            <con2:id>_ActionId-5657938995295287530-48fe69f7.14887f4f7f8.-7d5f</con2:id>
+            <con3:case>
+              <con3:condition>
+                <con2:xqueryText>$process = xs:boolean('false')</con2:xqueryText>
+              </con3:condition>
+              <con3:actions>
+                <con2:ifThenElse xmlns:con3="http://www.bea.com/wli/sb/typesystem/config" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con6="http://www.bea.com/wli/sb/pipeline/config" xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con1="http://www.bea.com/wli/sb/stages/config">
+                  <con1:id>_ActionId-5657938995295287530-48fe69f7.14887f4f7f8.-7b4c</con1:id>
+                  <con2:case>
+                    <con2:condition>
+                      <con1:xqueryText>$audit = 'true'</con1:xqueryText>
+                    </con2:condition>
+                    <con2:actions>
+                      <con2:assign varName="event">
+                        <con1:id>_ActionId-5657938995295287530-48fe69f7.14887f4f7f8.-7b4b</con1:id>
+                        <con2:expr>
+                          <con1:xqueryText>&lt;event>EventDiscarded&lt;/event></con1:xqueryText>
+                        </con2:expr>
+                      </con2:assign>
+                      <con4:report xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+                        <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-5657938995295287530-48fe69f7.14887f4f7f8.-7b4a</con7:id>
+                        <con4:expr>
+                          <con7:xqueryText xmlns:con7="http://www.bea.com/wli/sb/stages/config">$event</con7:xqueryText>
+                        </con4:expr>
+                        <con4:labels>
+                          <con4:key>Evt</con4:key>
+                          <con4:varName>event</con4:varName>
+                          <con4:value>
+                            <con7:xpathText xmlns:con7="http://www.bea.com/wli/sb/stages/config">.</con7:xpathText>
+                          </con4:value>
+                        </con4:labels>
+                        <con4:labels>
+                          <con4:key>Id</con4:key>
+                          <con4:varName>header</con4:varName>
+                          <con4:value>
+                            <con7:xpathText xmlns:con7="http://www.bea.com/wli/sb/stages/config">./ouh:Header/CorrelationId</con7:xpathText>
+                          </con4:value>
+                        </con4:labels>
+                      </con4:report>
+                    </con2:actions>
+                  </con2:case>
+                </con2:ifThenElse>
+                <con2:reply>
+                  <con2:id>_ActionId-5657938995295287530-48fe69f7.14887f4f7f8.-7d27</con2:id>
+                </con2:reply>
+              </con3:actions>
+            </con3:case>
+          </con3:ifThenElse>
+        </con1:actions>
+      </con1:stage>
+      <con1:stage name="StudentModuleChoice">
+        <con1:context>
+          <con2:userNsDecl namespace="http://open.ac.uk/header/" prefix="ouh"/>
+          <con2:varNsDecl namespace="http://open.ac.uk/Student/StudentModuleEvent" prefix="stud"/>
+          <con:variable name="captureStudentModuleSubscription" path="$captureStudentModuleSubscription" asChild="false">
+            <con:schema ref="ServiceRepository/Student/StudentModuleEvent/xsd/StudentModuleEvent.1.0" element="CaptureStudentModuleSubscription"/>
+          </con:variable>
+        </con1:context>
+        <con1:actions>
+          <con3:ifThenElse>
+            <con2:id>_ActionId-2089487973657117748--37073b94.148a1566fb0.-7fbb</con2:id>
+            <con3:case>
+              <con3:condition>
+                <con2:xqueryText>fn:exists($payload/stud:ModuleRegistrationEvent) = xs:boolean('true')</con2:xqueryText>
+              </con3:condition>
+              <con3:actions>
+                <con3:replace varName="body" xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+                  <con2:id>_ActionId-2089487973657117748--37073b94.148a1566fb0.-7f65</con2:id>
+                  <con3:location>
+                    <con2:xpathText>./*</con2:xpathText>
+                  </con3:location>
+                  <con3:expr>
+                    <con2:xqueryTransform>
+                      <con2:resource ref="StudentModuleEvent/xquery/StudentModuleRegistrationChoice"/>
+                      <con2:param name="captureStudentModuleSubscription">
+                        <con2:path>$payload/.</con2:path>
+                      </con2:param>
+                    </con2:xqueryTransform>
+                  </con3:expr>
+                </con3:replace>
+                <con2:ifThenElse xmlns:con3="http://www.bea.com/wli/sb/typesystem/config" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con6="http://www.bea.com/wli/sb/pipeline/config" xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con1="http://www.bea.com/wli/sb/stages/config">
+                  <con1:id>_ActionId-2089487973657117748--37073b94.148a1566fb0.-7d85</con1:id>
+                  <con2:case>
+                    <con2:condition>
+                      <con1:xqueryText>$audit = 'true'</con1:xqueryText>
+                    </con2:condition>
+                    <con2:actions>
+                      <con2:assign varName="event">
+                        <con1:id>_ActionId-2089487973657117748--37073b94.148a1566fb0.-7d84</con1:id>
+                        <con2:expr>
+                          <con1:xqueryText>&lt;event>ModuleRegistration&lt;/event></con1:xqueryText>
+                        </con2:expr>
+                      </con2:assign>
+                      <con4:report xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+                        <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-2089487973657117748--37073b94.148a1566fb0.-7d83</con7:id>
+                        <con4:expr>
+                          <con7:xqueryText xmlns:con7="http://www.bea.com/wli/sb/stages/config">$event</con7:xqueryText>
+                        </con4:expr>
+                        <con4:labels>
+                          <con4:key>Evt</con4:key>
+                          <con4:varName>event</con4:varName>
+                          <con4:value>
+                            <con7:xpathText xmlns:con7="http://www.bea.com/wli/sb/stages/config">.</con7:xpathText>
+                          </con4:value>
+                        </con4:labels>
+                        <con4:labels>
+                          <con4:key>Id</con4:key>
+                          <con4:varName>header</con4:varName>
+                          <con4:value>
+                            <con7:xpathText xmlns:con7="http://www.bea.com/wli/sb/stages/config">./ouh:Header/CorrelationId</con7:xpathText>
+                          </con4:value>
+                        </con4:labels>
+                      </con4:report>
+                    </con2:actions>
+                  </con2:case>
+                </con2:ifThenElse>
+              </con3:actions>
+            </con3:case>
+            <con3:default>
+              <con3:replace varName="body" xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+                <con2:id>_ActionId-2089487973657117748--37073b94.148a1566fb0.-7ef5</con2:id>
+                <con3:location>
+                  <con2:xpathText>./*</con2:xpathText>
+                </con3:location>
+                <con3:expr>
+                  <con2:xqueryTransform>
+                    <con2:resource ref="StudentModuleEvent/xquery/StudentModuleWithdrawlChoice"/>
+                    <con2:param name="captureStudentModuleSubscription">
+                      <con2:path>$payload/.</con2:path>
+                    </con2:param>
+                  </con2:xqueryTransform>
+                </con3:expr>
+              </con3:replace>
+              <con2:ifThenElse xmlns:con3="http://www.bea.com/wli/sb/typesystem/config" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con6="http://www.bea.com/wli/sb/pipeline/config" xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con1="http://www.bea.com/wli/sb/stages/config">
+                <con1:id>_ActionId-2089487973657117748--37073b94.148a1566fb0.-7d2b</con1:id>
+                <con2:case>
+                  <con2:condition>
+                    <con1:xqueryText>$audit = 'true'</con1:xqueryText>
+                  </con2:condition>
+                  <con2:actions>
+                    <con2:assign varName="event">
+                      <con1:id>_ActionId-2089487973657117748--37073b94.148a1566fb0.-7d2a</con1:id>
+                      <con2:expr>
+                        <con1:xqueryText>&lt;event>ModuleWithdrawl&lt;/event></con1:xqueryText>
+                      </con2:expr>
+                    </con2:assign>
+                    <con4:report xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+                      <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-2089487973657117748--37073b94.148a1566fb0.-7d29</con7:id>
+                      <con4:expr>
+                        <con7:xqueryText xmlns:con7="http://www.bea.com/wli/sb/stages/config">$event</con7:xqueryText>
+                      </con4:expr>
+                      <con4:labels>
+                        <con4:key>Evt</con4:key>
+                        <con4:varName>event</con4:varName>
+                        <con4:value>
+                          <con7:xpathText xmlns:con7="http://www.bea.com/wli/sb/stages/config">.</con7:xpathText>
+                        </con4:value>
+                      </con4:labels>
+                      <con4:labels>
+                        <con4:key>Id</con4:key>
+                        <con4:varName>header</con4:varName>
+                        <con4:value>
+                          <con7:xpathText xmlns:con7="http://www.bea.com/wli/sb/stages/config">./ouh:Header/CorrelationId</con7:xpathText>
+                        </con4:value>
+                      </con4:labels>
+                    </con4:report>
+                  </con2:actions>
+                </con2:case>
+              </con2:ifThenElse>
+            </con3:default>
+          </con3:ifThenElse>
+        </con1:actions>
+      </con1:stage>
+    </con1:pipeline>
+    <con1:pipeline type="response" name="CaptureStudentModuleChoicePipe_response"/>
+    <con1:flow>
+      <con1:pipeline-node name="CaptureStudentModuleChoicePipe">
+        <con1:request>CaptureStudentModuleChoicePipe_request</con1:request>
+        <con1:response>CaptureStudentModuleChoicePipe_response</con1:response>
+      </con1:pipeline-node>
+      <con1:route-node name="RouteToCaptureStudentModule">
+        <con1:context>
+          <con2:varNsDecl namespace="http://open.ac.uk/Student/StudentRegistrationEvent" prefix="stud"/>
+        </con1:context>
+        <con1:actions>
+          <con1:route xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+            <con2:id>_ActionId-7882218060990570734--7ec4b21d.147814290c8.-7b83</con2:id>
+            <con1:service ref="NamedTeachingSupport/biz/CaptureStudentModuleQueue" xsi:type="ref:BusinessServiceRef" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+            <con1:outboundTransform>
+              <con1:assign varName="store" xmlns:con3="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config">
+                <con2:id>_ActionId-6223911977299132086--2e0d1e29.14786c7cf15.-7f58</con2:id>
+                <con1:expr>
+                  <con2:xqueryTransform>
+                    <con2:resource ref="Common/audit/xquery/Store"/>
+                    <con2:param name="endpoint">
+                      <con2:path>$outbound</con2:path>
+                    </con2:param>
+                    <con2:param name="body">
+                      <con2:path>$body</con2:path>
+                    </con2:param>
+                    <con2:param name="header">
+                      <con2:path>$header</con2:path>
+                    </con2:param>
+                  </con2:xqueryTransform>
+                </con1:expr>
+              </con1:assign>
+              <con3:routing-options>
+                <con2:id>_ActionId-7882218060990570734--7ec4b21d.147814290c8.-7b80</con2:id>
+                <con3:qualityOfService>exactly-once</con3:qualityOfService>
+              </con3:routing-options>
+            </con1:outboundTransform>
+            <con1:responseTransform/>
+          </con1:route>
+        </con1:actions>
+      </con1:route-node>
+    </con1:flow>
+  </ser:router>
+</xml-fragment>

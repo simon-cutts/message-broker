@@ -1,0 +1,1039 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-fragment xmlns:ser="http://www.bea.com/wli/sb/services" xmlns:tran="http://www.bea.com/wli/sb/transports" xmlns:env="http://www.bea.com/wli/config/env" xmlns:http="http://www.bea.com/wli/sb/transports/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:con1="http://www.bea.com/wli/sb/stages/config" xmlns:con2="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/typesystem/config" xmlns:con5="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con6="http://www.bea.com/wli/sb/stages/publish/config">
+  <ser:coreEntry isProxy="true" isEnabled="true">
+    <ser:binding type="SOAP" isSoap12="false" xsi:type="con7:SoapBindingType" xmlns:con7="http://www.bea.com/wli/sb/services/bindings/config">
+      <con7:wsdl ref="ServiceRepository/Contact/SignUp/wsdl/SignUp.1.0"/>
+      <con7:port>
+        <con7:name>BasicSoapBinding</con7:name>
+        <con7:namespace>http://open.ac.uk/Contact/Service/SignUp</con7:namespace>
+      </con7:port>
+      <con7:selector type="SOAP body"/>
+      <con7:WSI-compliant>false</con7:WSI-compliant>
+    </ser:binding>
+    <ser:monitoring isEnabled="true">
+      <ser:aggregationInterval>10</ser:aggregationInterval>
+      <ser:pipelineMonitoringLevel>Pipeline</ser:pipelineMonitoringLevel>
+    </ser:monitoring>
+    <ser:reporting>true</ser:reporting>
+    <ser:logging isEnabled="true">
+      <ser:logLevel>debug</ser:logLevel>
+    </ser:logging>
+    <ser:sla-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:sla-alerting>
+    <ser:pipeline-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:pipeline-alerting>
+    <ser:ws-policy>
+      <ser:binding-mode>wsdl-policy-attachments</ser:binding-mode>
+    </ser:ws-policy>
+    <ser:transactions isRequired="false" sameTxForResponse="false"/>
+  </ser:coreEntry>
+  <ser:endpointConfig>
+    <tran:provider-id>http</tran:provider-id>
+    <tran:inbound>true</tran:inbound>
+    <tran:URI>
+      <env:value>/osb/Contact/SignUp/1.0</env:value>
+    </tran:URI>
+    <tran:inbound-properties/>
+    <tran:all-headers>false</tran:all-headers>
+    <tran:provider-specific>
+      <http:inbound-properties/>
+    </tran:provider-specific>
+  </ser:endpointConfig>
+  <ser:router errorHandler="_onErrorHandler-7343360098588607010--32e05206.1410bdd040d.-7f35">
+    <con:pipeline type="request" name="SignUpPipe_request">
+      <con:stage name="AddHeader" xmlns:con3="http://www.bea.com/wli/sb/typesystem/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con5="http://www.bea.com/wli/sb/stages/alert/config">
+        <con:context xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+          <con5:varNsDecl namespace="http://open.ac.uk/Student/ManageStudentSSTAllocation" prefix="ns" xmlns:con5="http://www.bea.com/wli/sb/stages/config"/>
+          <con5:varNsDecl namespace="http://open.ac.uk/schema/RequestHeader" prefix="ns1" xmlns:con5="http://www.bea.com/wli/sb/stages/config"/>
+          <con6:varNsDecl namespace="http://open.ac.uk/header/" prefix="ouh" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+          <con6:varNsDecl namespace="http://open.ac.uk/audit/service" prefix="ser" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+          <con6:varNsDecl namespace="http://open.ac.uk/audit/" prefix="aud" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+          <con4:variable name="head" path="$head" asChild="false">
+            <con4:schema ref="ServiceRepository/ouosb/xsd/Header" element="Header"/>
+          </con4:variable>
+          <con4:variable name="serviceAudit" path="$serviceAudit" asChild="false">
+            <con4:schema ref="ServiceRepository/ouosb/xsd/ServiceAudit" element="ServiceAudit"/>
+          </con4:variable>
+          <con4:variable name="audit" path="$audit" asChild="false">
+            <con4:schema ref="ServiceRepository/ouosb/xsd/Audit" element="Audit"/>
+          </con4:variable>
+        </con:context>
+        <con:actions xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+          <con5:assign varName="audit" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config">
+            <con6:id xmlns:con6="http://www.bea.com/wli/sb/stages/config">_ActionId-1172366102597070297--51837284.14106c9f302.-7cbe</con6:id>
+            <con5:expr>
+              <con7:xqueryTransform xmlns:con7="http://www.bea.com/wli/sb/stages/config">
+                <con7:resource ref="ManageContactInteractions/xquery/ConfigXml"/>
+                <con7:param name="key">
+                  <con7:path>'audit'</con7:path>
+                </con7:param>
+              </con7:xqueryTransform>
+            </con5:expr>
+          </con5:assign>
+          <con4:assign varName="header" xmlns:con4="http://www.bea.com/wli/sb/stages/transform/config">
+            <con6:id xmlns:con6="http://www.bea.com/wli/sb/stages/config">_ActionId-8817531939999341950-51b6d627.14005b625d5.-7ecd</con6:id>
+            <con4:expr>
+              <con5:xqueryTransform xmlns:con5="http://www.bea.com/wli/sb/stages/config">
+                <con5:resource ref="Common/header/xquery/AddHeader"/>
+                <con5:param name="header">
+                  <con5:path>$header</con5:path>
+                </con5:param>
+              </con5:xqueryTransform>
+            </con4:expr>
+          </con4:assign>
+          <con5:ifThenElse xmlns:con3="http://www.bea.com/wli/sb/typesystem/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con1="http://www.bea.com/wli/sb/stages/config" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config" xmlns:jms="http://www.bea.com/wli/sb/transports/jms">
+            <con1:id>_ActionId-7343360098588607010--32e05206.1410bdd040d.-7d47</con1:id>
+            <con5:case>
+              <con5:condition>
+                <con1:xqueryText>$audit = 'true'</con1:xqueryText>
+              </con5:condition>
+              <con5:actions>
+                <con5:assign varName="store">
+                  <con1:id>_ActionId-7343360098588607010--32e05206.1410bdd040d.-7d46</con1:id>
+                  <con5:expr>
+                    <con1:xqueryTransform>
+                      <con1:resource ref="Common/audit/xquery/StoreAuditEvent"/>
+                      <con1:param name="event">
+                        <con1:path>'Inbound'</con1:path>
+                      </con1:param>
+                      <con1:param name="endpoint">
+                        <con1:path>$inbound</con1:path>
+                      </con1:param>
+                      <con1:param name="header">
+                        <con1:path>$header</con1:path>
+                      </con1:param>
+                      <con1:param name="request">
+                        <con1:path>$body/.</con1:path>
+                      </con1:param>
+                    </con1:xqueryTransform>
+                  </con5:expr>
+                </con5:assign>
+                <con4:report xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+                  <con6:id xmlns:con6="http://www.bea.com/wli/sb/stages/config">_ActionId-7343360098588607010--32e05206.1410bdd040d.-7d45</con6:id>
+                  <con4:expr>
+                    <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$store</con6:xqueryText>
+                  </con4:expr>
+                  <con4:labels>
+                    <con4:key>Evt</con4:key>
+                    <con4:varName>store</con4:varName>
+                    <con4:value>
+                      <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">./aud:AuditEvent</con6:xpathText>
+                    </con4:value>
+                  </con4:labels>
+                  <con4:labels>
+                    <con4:key>Id</con4:key>
+                    <con4:varName>store</con4:varName>
+                    <con4:value>
+                      <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">./soap-env:Header//*:CorrelationId</con6:xpathText>
+                    </con4:value>
+                  </con4:labels>
+                </con4:report>
+              </con5:actions>
+            </con5:case>
+          </con5:ifThenElse>
+        </con:actions>
+      </con:stage>
+      <con:stage name="CheckSamsTrust2TokenPresent">
+        <con:context>
+          <con1:userNsDecl namespace="http://open.ac.uk/header/" prefix="ouh"/>
+          <con1:userNsDecl namespace="http://open.ac.uk/schema/faults" prefix="oufault"/>
+          <con1:varNsDecl namespace="http://www.open.ac.uk/voice/webservices/OUVoiceUpsertAccountWS" prefix="ouv"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/audit/" prefix="aud"/>
+          <con4:variable name="audit" path="$audit" asChild="false">
+            <con4:schema ref="ServiceRepository/ouosb/xsd/Audit" element="Audit"/>
+          </con4:variable>
+        </con:context>
+        <con:actions>
+          <con3:wsCallout>
+            <con1:id>_ActionId-7891867840639025190--105bdd11.14371eac25f.-7fa7</con1:id>
+            <con3:service xsi:type="ref:ProxyRef" ref="Sams/proxy/ValidateSamsToken" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+            <con3:operation>ValidateToken</con3:operation>
+            <con3:request>
+              <con3:body wrapped="true">$body</con3:body>
+              <con3:header>$header</con3:header>
+            </con3:request>
+            <con3:response>
+              <con3:body wrapped="true">body</con3:body>
+              <con3:header>headerResponse</con3:header>
+            </con3:response>
+            <con3:requestTransform>
+              <con1:assign varName="store" xmlns:con3="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config">
+                <con6:id xmlns:con6="http://www.bea.com/wli/sb/stages/config">_ActionId-7891867840639025190--105bdd11.14371eac25f.-7fab</con6:id>
+                <con1:expr>
+                  <con6:xqueryTransform xmlns:con6="http://www.bea.com/wli/sb/stages/config">
+                    <con6:resource ref="Common/audit/xquery/Store"/>
+                    <con6:param name="endpoint">
+                      <con6:path>$outbound</con6:path>
+                    </con6:param>
+                    <con6:param name="body">
+                      <con6:path>$body</con6:path>
+                    </con6:param>
+                    <con6:param name="header">
+                      <con6:path>$header</con6:path>
+                    </con6:param>
+                  </con6:xqueryTransform>
+                </con1:expr>
+              </con1:assign>
+              <con3:replace varName="body">
+                <con1:id>_ActionId-7891867840639025190--105bdd11.14371eac25f.-7faa</con1:id>
+                <con3:location>
+                  <con1:xpathText>./*</con1:xpathText>
+                </con3:location>
+                <con3:expr>
+                  <con1:xqueryText>$inbound</con1:xqueryText>
+                </con3:expr>
+              </con3:replace>
+            </con3:requestTransform>
+            <con3:responseTransform>
+              <con3:replace varName="body">
+                <con1:id>_ActionId-7891867840639025190--105bdd11.14371eac25f.-7fa9</con1:id>
+                <con3:location>
+                  <con1:xpathText>.</con1:xpathText>
+                </con3:location>
+                <con3:expr>
+                  <con1:xqueryText>$store/soap-env:Body</con1:xqueryText>
+                </con3:expr>
+              </con3:replace>
+              <con1:assign varName="samsToken" xmlns:con3="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con1="http://www.bea.com/wli/sb/stages/transform/config">
+                <con6:id xmlns:con6="http://www.bea.com/wli/sb/stages/config">_ActionId-7891867840639025190--105bdd11.14371eac25f.-7fa8</con6:id>
+                <con1:expr>
+                  <con5:xqueryTransform xmlns:con5="http://www.bea.com/wli/sb/stages/config">
+                    <con5:resource ref="Sams/xquery/ExtractToken"/>
+                    <con5:param name="inbound">
+                      <con5:path>$inbound</con5:path>
+                    </con5:param>
+                  </con5:xqueryTransform>
+                </con1:expr>
+              </con1:assign>
+            </con3:responseTransform>
+          </con3:wsCallout>
+        </con:actions>
+      </con:stage>
+      <con:stage name="ValidateIncomingMsg">
+        <con:context>
+          <con1:varNsDecl namespace="http://open.ac.uk/Contact/SignUp" prefix="sig"/>
+        </con:context>
+        <con:actions>
+          <con5:assign varName="validate" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+            <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-3476918567605409683-30fa473f.144fe76b83c.-7fc6</con7:id>
+            <con5:expr>
+              <con7:xqueryTransform xmlns:con7="http://www.bea.com/wli/sb/stages/config">
+                <con7:resource ref="ManageContactInteractions/xquery/ConfigXml"/>
+                <con7:param name="key">
+                  <con7:path>'validate'</con7:path>
+                </con7:param>
+              </con7:xqueryTransform>
+            </con5:expr>
+          </con5:assign>
+          <con3:ifThenElse>
+            <con1:id>_ActionId-3476918567605409683-30fa473f.144fe76b83c.-7f9c</con1:id>
+            <con3:case>
+              <con3:condition>
+                <con1:xqueryText>$validate = 'true'</con1:xqueryText>
+              </con3:condition>
+              <con3:actions>
+                <con3:validate>
+                  <con1:id>_ActionId-3476918567605409683-30fa473f.144fe76b83c.-7f43</con1:id>
+                  <con3:schema ref="ServiceRepository/Contact/SignUp/xsd/SignUp.1.0"/>
+                  <con3:schemaElement xmlns:sig="http://open.ac.uk/Contact/SignUp">sig:SignUpRequest</con3:schemaElement>
+                  <con3:varName>body</con3:varName>
+                  <con3:location>
+                    <con1:xpathText>./sig:SignUpRequest</con1:xpathText>
+                  </con3:location>
+                </con3:validate>
+              </con3:actions>
+            </con3:case>
+          </con3:ifThenElse>
+        </con:actions>
+      </con:stage>
+      <con:stage name="CheckUserAlreadyExists">
+        <con:context>
+          <con1:varNsDecl namespace="http://open.ac.uk/Contact/SignUp" prefix="sig"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/Contact/CreateCustomerProspect" prefix="cre"/>
+          <con1:varNsDecl namespace="http://www.open.ac.uk/voice/webservices/ouvoicegetcontactws" prefix="ouv"/>
+          <con1:varNsDecl namespace="http://tempuri.org/" prefix="tem"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/header/" prefix="head"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/audit/service" prefix="ser"/>
+          <con4:variable name="samsSignUpResponse" path="$samsSignUpResponse" asChild="false">
+            <con4:wsdl ref="ServiceRepository/Utilities/sams/SignUpWS" element="tem:SignUpEnquirerResponse" xmlns:tem="http://tempuri.org/"/>
+          </con4:variable>
+          <con4:variable name="head" path="$head" asChild="false">
+            <con4:schema ref="ServiceRepository/ouosb/xsd/Header" element="Header"/>
+          </con4:variable>
+          <con4:variable name="serviceAudit" path="$serviceAudit" asChild="false">
+            <con4:schema ref="ServiceRepository/ouosb/xsd/ServiceAudit" element="ServiceAudit"/>
+          </con4:variable>
+          <con4:variable name="getContactByDetailsRes" path="$getContactByDetailsRes" asChild="false">
+            <con4:wsdl ref="ServiceRepository/Contact/OUVoiceGetContact/wsdl/OUVoiceGetContactV2.0" element="ouv:GetContactByDetailsResponse" xmlns:ouv="http://www.open.ac.uk/voice/webservices/ouvoicegetcontactws"/>
+          </con4:variable>
+        </con:context>
+        <con:actions>
+          <con3:wsCallout xmlns:con2="http://www.bea.com/wli/sb/typesystem/config" xmlns:con5="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con4="http://www.bea.com/wli/sb/stages/routing/config" xmlns:jms="http://www.bea.com/wli/sb/transports/jms">
+            <con1:id>_ActionId-342045625602582618-22d921a1.145d1af29ce.-7971</con1:id>
+            <con3:service xsi:type="ref:ProxyRef" ref="OUVoiceContact/proxy/OUVoiceContactInternalV2.0" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+            <con3:operation>GetContactByDetails</con3:operation>
+            <con3:request>
+              <con3:body>$getContactByDetailsReq</con3:body>
+              <con3:header>$header</con3:header>
+            </con3:request>
+            <con3:response>
+              <con3:body>getContactByDetailsRes</con3:body>
+              <con3:header>responseHeader</con3:header>
+            </con3:response>
+            <con3:requestTransform>
+              <con3:assign varName="getContactByDetailsReq">
+                <con1:id>_ActionId-342045625602582618-22d921a1.145d1af29ce.-7979</con1:id>
+                <con3:expr>
+                  <con1:xqueryTransform>
+                    <con1:resource ref="ManageContactInteractions/xquery/GetContactDetailsByEmail"/>
+                    <con1:param name="lastname">
+                      <con1:path>$body/sig:SignUpRequest/sig:CustomerDetails/cre:Surname/text()</con1:path>
+                    </con1:param>
+                    <con1:param name="emailId">
+                      <con1:path>$body/sig:SignUpRequest/sig:CustomerDetails/cre:Email/text()</con1:path>
+                    </con1:param>
+                    <con1:param name="firstname">
+                      <con1:path>$body/sig:SignUpRequest/sig:CustomerDetails/cre:Forename/text()</con1:path>
+                    </con1:param>
+                  </con1:xqueryTransform>
+                </con3:expr>
+              </con3:assign>
+              <con5:assign varName="store" xmlns:con3="http://www.bea.com/wli/sb/typesystem/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config">
+                <con1:id>_ActionId-342045625602582618-22d921a1.145d1af29ce.-7978</con1:id>
+                <con5:expr>
+                  <con1:xqueryTransform>
+                    <con1:resource ref="Common/audit/xquery/StoreRequest"/>
+                    <con1:param name="endpoint">
+                      <con1:path>$outbound</con1:path>
+                    </con1:param>
+                    <con1:param name="header">
+                      <con1:path>$header</con1:path>
+                    </con1:param>
+                    <con1:param name="request">
+                      <con1:path>$getContactByDetailsReq</con1:path>
+                    </con1:param>
+                  </con1:xqueryTransform>
+                </con5:expr>
+              </con5:assign>
+            </con3:requestTransform>
+            <con3:responseTransform>
+              <con3:ifThenElse>
+                <con1:id>_ActionId-342045625602582618-22d921a1.145d1af29ce.-76ac</con1:id>
+                <con3:case>
+                  <con3:condition>
+                    <con1:xqueryText>$getContactByDetailsRes/ouv:GetContactByDetailsResult/ouv:Status = 'Okay'</con1:xqueryText>
+                  </con3:condition>
+                  <con3:actions>
+                    <con3:ifThenElse>
+                      <con1:id>_ActionId-342045625602582618-22d921a1.145d1af29ce.-76a8</con1:id>
+                      <con3:case>
+                        <con3:condition>
+                          <con1:xqueryText>$getContactByDetailsRes/ouv:GetContactByDetailsResult/ouv:RowCount = 0</con1:xqueryText>
+                        </con3:condition>
+                        <con3:actions>
+                          <con3:assign varName="ProceedWithSignUp">
+                            <con1:id>_ActionId-342045625602582618-22d921a1.145d1af29ce.-76a7</con1:id>
+                            <con3:expr>
+                              <con1:xqueryText>'Yes'</con1:xqueryText>
+                            </con3:expr>
+                          </con3:assign>
+                        </con3:actions>
+                      </con3:case>
+                      <con3:default>
+                        <con3:assign varName="ProceedWithSignUp">
+                          <con1:id>_ActionId-342045625602582618-22d921a1.145d1af29ce.-7667</con1:id>
+                          <con3:expr>
+                            <con1:xqueryTransform>
+                              <con1:resource ref="ManageContactInteractions/xquery/ProceedWithSignUp"/>
+                              <con1:param name="getContactByDetailsResponse">
+                                <con1:path>$getContactByDetailsRes</con1:path>
+                              </con1:param>
+                            </con1:xqueryTransform>
+                          </con3:expr>
+                        </con3:assign>
+                      </con3:default>
+                    </con3:ifThenElse>
+                  </con3:actions>
+                </con3:case>
+                <con3:default>
+                  <con5:assign varName="serviceAudit" xmlns:con3="http://www.bea.com/wli/sb/typesystem/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config">
+                    <con1:id>_ActionId-3799370594370666943--65f4bfa0.146d22a5a6b.-7b44</con1:id>
+                    <con5:expr>
+                      <con1:xqueryTransform>
+                        <con1:resource ref="Common/audit/xquery/ServiceAuditRequest"/>
+                        <con1:param name="requestHeader">
+                          <con1:path>$header/.</con1:path>
+                        </con1:param>
+                        <con1:param name="event">
+                          <con1:path>'GetContactByDetailsFailed'</con1:path>
+                        </con1:param>
+                        <con1:param name="requestBody">
+                          <con1:path>$getContactByDetailsReq</con1:path>
+                        </con1:param>
+                        <con1:param name="responseHeader">
+                          <con1:path>$reponseHeader</con1:path>
+                        </con1:param>
+                        <con1:param name="correlationId">
+                          <con1:path>$header/head:Header/CorrelationId/text()</con1:path>
+                        </con1:param>
+                        <con1:param name="responseBody">
+                          <con1:path>$getContactByDetailsRes</con1:path>
+                        </con1:param>
+                      </con1:xqueryTransform>
+                    </con5:expr>
+                  </con5:assign>
+                  <con4:report xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con6="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config">
+                    <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-3799370594370666943--65f4bfa0.146d22a5a6b.-7b0b</con7:id>
+                    <con4:expr>
+                      <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$serviceAudit</con6:xqueryText>
+                    </con4:expr>
+                    <con4:labels>
+                      <con4:key>Evt</con4:key>
+                      <con4:varName>serviceAudit</con4:varName>
+                      <con4:value>
+                        <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">./ser:AuditEvent</con6:xpathText>
+                      </con4:value>
+                    </con4:labels>
+                    <con4:labels>
+                      <con4:key>Id</con4:key>
+                      <con4:varName>serviceAudit</con4:varName>
+                      <con4:value>
+                        <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">./ser:CorrelationId</con6:xpathText>
+                      </con4:value>
+                    </con4:labels>
+                  </con4:report>
+                  <con2:replace varName="body" xmlns:con3="http://www.bea.com/wli/sb/pipeline/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con1="http://www.bea.com/wli/sb/typesystem/config" xmlns:con5="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con4="http://www.bea.com/wli/sb/typesystem/config">
+                    <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-342045625602582618-22d921a1.145d1af29ce.-766b</con7:id>
+                    <con2:location>
+                      <con3:xpathText xmlns:con3="http://www.bea.com/wli/sb/stages/config">./*</con3:xpathText>
+                    </con2:location>
+                    <con2:expr>
+                      <con4:xqueryTransform xmlns:con4="http://www.bea.com/wli/sb/stages/config">
+                        <con4:resource ref="Common/error/xquery/SoapFaultWrapsOuFault.1.1"/>
+                        <con4:param name="message">
+                          <con4:path>'There was a problem while verifying your signup details. Please try again later'</con4:path>
+                        </con4:param>
+                        <con4:param name="detail">
+                          <con4:path>$empty</con4:path>
+                        </con4:param>
+                        <con4:param name="code">
+                          <con4:path>'1515'</con4:path>
+                        </con4:param>
+                      </con4:xqueryTransform>
+                    </con2:expr>
+                  </con2:replace>
+                  <con1:reply isError="true" xmlns:con2="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con5="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con4="http://www.bea.com/wli/sb/typesystem/config">
+                    <con1:id>_ActionId-342045625602582618-22d921a1.145d1af29ce.-766a</con1:id>
+                  </con1:reply>
+                </con3:default>
+              </con3:ifThenElse>
+            </con3:responseTransform>
+          </con3:wsCallout>
+        </con:actions>
+      </con:stage>
+      <con:stage name="ProcessSignUp">
+        <con:context>
+          <con1:varNsDecl namespace="http://tempuri.org/" prefix="tem"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/Contact/SignUp" prefix="sig"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/header/" prefix="head"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/Contact/CreateCustomerProspect" prefix="cre"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/audit/service" prefix="ser"/>
+          <con4:variable name="samsSignUpRequest" path="$samsSignUpRequest" asChild="false">
+            <con4:wsdl ref="ServiceRepository/Utilities/sams/SignUpWS" element="tem:SignUpEnquirer" xmlns:tem="http://tempuri.org/"/>
+          </con4:variable>
+          <con4:variable name="samsSignUpResponse" path="$samsSignUpResponse" asChild="false">
+            <con4:wsdl ref="ServiceRepository/Utilities/sams/SignUpWS" element="tem:SignUpEnquirerResponse" xmlns:tem="http://tempuri.org/"/>
+          </con4:variable>
+          <con4:variable name="head" path="$head" asChild="false">
+            <con4:schema ref="ServiceRepository/ouosb/xsd/Header" element="Header"/>
+          </con4:variable>
+          <con4:variable name="serviceAudit" path="$serviceAudit" asChild="false">
+            <con4:schema ref="ServiceRepository/ouosb/xsd/ServiceAudit" element="ServiceAudit"/>
+          </con4:variable>
+        </con:context>
+        <con:actions>
+          <con3:ifThenElse>
+            <con1:id>_ActionId-342045625602582618-22d921a1.145d1af29ce.-760c</con1:id>
+            <con3:case>
+              <con3:condition>
+                <con1:xqueryText>$ProceedWithSignUp = 'Yes'</con1:xqueryText>
+              </con3:condition>
+              <con3:actions>
+                <con3:wsCallout>
+                  <con1:id>_ActionId-342045625602582618-22d921a1.145d1af29ce.-7573</con1:id>
+                  <con3:service xsi:type="ref:BusinessServiceRef" ref="Sams/biz/CreateSamsUser" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+                  <con3:operation>SignUpEnquirer</con3:operation>
+                  <con3:request>
+                    <con3:body>$samsSignUpRequest</con3:body>
+                    <con3:header>$header</con3:header>
+                  </con3:request>
+                  <con3:response>
+                    <con3:body>samsSignUpResponse</con3:body>
+                    <con3:header>headerResponse</con3:header>
+                  </con3:response>
+                  <con3:requestTransform>
+                    <con3:assign varName="samsSignUpRequest">
+                      <con1:id>_ActionId-342045625602582618-22d921a1.145d1af29ce.-7578</con1:id>
+                      <con3:expr>
+                        <con1:xqueryTransform>
+                          <con1:resource ref="ManageContactInteractions/xquery/SignUpEnquirer"/>
+                          <con1:param name="signUpRequest">
+                            <con1:path>$body/sig:SignUpRequest</con1:path>
+                          </con1:param>
+                        </con1:xqueryTransform>
+                      </con3:expr>
+                    </con3:assign>
+                    <con2:assign varName="store" xmlns:con3="http://www.bea.com/wli/sb/typesystem/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config">
+                      <con1:id>_ActionId-342045625602582618-22d921a1.145d1af29ce.-7577</con1:id>
+                      <con2:expr>
+                        <con1:xqueryTransform>
+                          <con1:resource ref="Common/audit/xquery/StoreRequest"/>
+                          <con1:param name="endpoint">
+                            <con1:path>$outbound</con1:path>
+                          </con1:param>
+                          <con1:param name="header">
+                            <con1:path>$header</con1:path>
+                          </con1:param>
+                          <con1:param name="request">
+                            <con1:path>$samsSignUpRequest</con1:path>
+                          </con1:param>
+                        </con1:xqueryTransform>
+                      </con2:expr>
+                    </con2:assign>
+                  </con3:requestTransform>
+                  <con3:responseTransform>
+                    <con2:ifThenElse xmlns:con3="http://www.bea.com/wli/sb/typesystem/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:jms="http://www.bea.com/wli/sb/transports/jms">
+                      <con1:id>_ActionId-342045625602582618-22d921a1.145d1af29ce.-7576</con1:id>
+                      <con2:case>
+                        <con2:condition>
+                          <con1:xqueryText>$samsSignUpResponse/tem:SignUpEnquirerResult/tem:Successful/text()  != 'true'</con1:xqueryText>
+                        </con2:condition>
+                        <con2:actions>
+                          <con2:assign varName="serviceAudit">
+                            <con1:id>_ActionId-342045625602582618-22d921a1.145d1af29ce.-7575</con1:id>
+                            <con2:expr>
+                              <con1:xqueryTransform>
+                                <con1:resource ref="Common/audit/xquery/ServiceAuditRequest"/>
+                                <con1:param name="requestHeader">
+                                  <con1:path>$header/.</con1:path>
+                                </con1:param>
+                                <con1:param name="event">
+                                  <con1:path>'CreateSAMSAccountFailed'</con1:path>
+                                </con1:param>
+                                <con1:param name="requestBody">
+                                  <con1:path>$samsSignUpRequest</con1:path>
+                                </con1:param>
+                                <con1:param name="responseHeader">
+                                  <con1:path>$headerResponse</con1:path>
+                                </con1:param>
+                                <con1:param name="correlationId">
+                                  <con1:path>$header/head:Header/CorrelationId/text()</con1:path>
+                                </con1:param>
+                                <con1:param name="responseBody">
+                                  <con1:path>$samsSignUpResponse</con1:path>
+                                </con1:param>
+                              </con1:xqueryTransform>
+                            </con2:expr>
+                          </con2:assign>
+                          <con6:report xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con6="http://www.bea.com/wli/sb/stages/logging/config">
+                            <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-342045625602582618-22d921a1.145d1af29ce.-7574</con7:id>
+                            <con6:expr>
+                              <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$serviceAudit</con6:xqueryText>
+                            </con6:expr>
+                            <con6:labels>
+                              <con6:key>Evt</con6:key>
+                              <con6:varName>serviceAudit</con6:varName>
+                              <con6:value>
+                                <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">./ser:AuditEvent</con6:xpathText>
+                              </con6:value>
+                            </con6:labels>
+                            <con6:labels>
+                              <con6:key>Id</con6:key>
+                              <con6:varName>serviceAudit</con6:varName>
+                              <con6:value>
+                                <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">./ser:CorrelationId</con6:xpathText>
+                              </con6:value>
+                            </con6:labels>
+                          </con6:report>
+                        </con2:actions>
+                      </con2:case>
+                      <con2:default>
+                        <con5:ifThenElse xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config">
+                          <con1:id>_ActionId-3799370594370666943--65f4bfa0.146d22a5a6b.-789a</con1:id>
+                          <con5:case>
+                            <con5:condition>
+                              <con1:xqueryText>$audit = 'true'</con1:xqueryText>
+                            </con5:condition>
+                            <con5:actions>
+                              <con2:assign varName="serviceAudit" xmlns:con5="http://www.bea.com/wli/sb/stages/logging/config">
+                                <con1:id>_ActionId-3799370594370666943--65f4bfa0.146d22a5a6b.-77ba</con1:id>
+                                <con2:expr>
+                                  <con1:xqueryTransform>
+                                    <con1:resource ref="Common/audit/xquery/ServiceAuditRequest"/>
+                                    <con1:param name="requestHeader">
+                                      <con1:path>$header/.</con1:path>
+                                    </con1:param>
+                                    <con1:param name="event">
+                                      <con1:path>'Outbound'</con1:path>
+                                    </con1:param>
+                                    <con1:param name="requestBody">
+                                      <con1:path>$samsSignUpRequest</con1:path>
+                                    </con1:param>
+                                    <con1:param name="responseHeader">
+                                      <con1:path>$headerResponse</con1:path>
+                                    </con1:param>
+                                    <con1:param name="correlationId">
+                                      <con1:path>$header/head:Header/CorrelationId/text()</con1:path>
+                                    </con1:param>
+                                    <con1:param name="responseBody">
+                                      <con1:path>$samsSignUpResponse</con1:path>
+                                    </con1:param>
+                                  </con1:xqueryTransform>
+                                </con2:expr>
+                              </con2:assign>
+                              <con6:report xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con6="http://www.bea.com/wli/sb/stages/logging/config">
+                                <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-3799370594370666943--65f4bfa0.146d22a5a6b.-7764</con7:id>
+                                <con6:expr>
+                                  <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$serviceAudit</con6:xqueryText>
+                                </con6:expr>
+                                <con6:labels>
+                                  <con6:key>Evt</con6:key>
+                                  <con6:varName>serviceAudit</con6:varName>
+                                  <con6:value>
+                                    <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">./ser:AuditEvent</con6:xpathText>
+                                  </con6:value>
+                                </con6:labels>
+                                <con6:labels>
+                                  <con6:key>Id</con6:key>
+                                  <con6:varName>serviceAudit</con6:varName>
+                                  <con6:value>
+                                    <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">./ser:CorrelationId</con6:xpathText>
+                                  </con6:value>
+                                </con6:labels>
+                              </con6:report>
+                            </con5:actions>
+                          </con5:case>
+                        </con5:ifThenElse>
+                      </con2:default>
+                    </con2:ifThenElse>
+                  </con3:responseTransform>
+                </con3:wsCallout>
+                <con3:ifThenElse>
+                  <con1:id>_ActionId-342045625602582618-22d921a1.145d1af29ce.-7569</con1:id>
+                  <con3:case>
+                    <con3:condition>
+                      <con1:xqueryText>$samsSignUpResponse/tem:SignUpEnquirerResult/tem:Successful/text() = 'true'</con1:xqueryText>
+                    </con3:condition>
+                    <con3:actions>
+                      <con6:route>
+                        <con1:id>_ActionId-342045625602582618-22d921a1.145d1af29ce.-7568</con1:id>
+                        <con6:service ref="ManageContactInteractions/biz/ContactProspect" xsi:type="ref:BusinessServiceRef" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+                        <con6:operation>CreateCustomerProspect</con6:operation>
+                        <con6:outboundTransform>
+                          <con3:replace varName="body">
+                            <con1:id>_ActionId-342045625602582618-22d921a1.145d1af29ce.-7567</con1:id>
+                            <con3:location>
+                              <con1:xpathText>./*</con1:xpathText>
+                            </con3:location>
+                            <con3:expr>
+                              <con1:xqueryTransform>
+                                <con1:resource ref="ManageContactInteractions/xquery/MapSignUpToContactProspect"/>
+                                <con1:param name="signUpEnquirerResponse">
+                                  <con1:path>$samsSignUpResponse</con1:path>
+                                </con1:param>
+                                <con1:param name="signUpRequest">
+                                  <con1:path>$body/sig:SignUpRequest</con1:path>
+                                </con1:param>
+                              </con1:xqueryTransform>
+                            </con3:expr>
+                          </con3:replace>
+                          <con4:routing-options xmlns:con3="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con2="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con4="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con5="http://www.bea.com/wli/sb/stages/publish/config" xmlns:jms="http://www.bea.com/wli/sb/transports/jms">
+                            <con1:id>_ActionId-342045625602582618-22d921a1.145d1af29ce.-7566</con1:id>
+                            <con4:qualityOfService>exactly-once</con4:qualityOfService>
+                          </con4:routing-options>
+                        </con6:outboundTransform>
+                      </con6:route>
+                      <con3:replace varName="body">
+                        <con1:id>_ActionId-4658763651895169975-1ec5675f.1467fb2e116.-79d3</con1:id>
+                        <con3:location>
+                          <con1:xpathText>./*</con1:xpathText>
+                        </con3:location>
+                        <con3:expr>
+                          <con1:xqueryTransform>
+                            <con1:resource ref="ManageContactInteractions/xquery/SignUpSuccess"/>
+                            <con1:param name="signUpEnquirerResponse">
+                              <con1:path>$samsSignUpResponse</con1:path>
+                            </con1:param>
+                          </con1:xqueryTransform>
+                        </con3:expr>
+                      </con3:replace>
+                      <con1:reply>
+                        <con1:id>_ActionId-4658763651895169975-1ec5675f.1467fb2e116.-79d1</con1:id>
+                      </con1:reply>
+                    </con3:actions>
+                  </con3:case>
+                  <con3:case>
+                    <con3:condition>
+                      <con1:xqueryConditionExpr>
+                        <con1:boolExpr operator="and">
+                          <con1:compExpr operator="!=">
+                            <con1:leftPath>$samsSignUpResponse/tem:SignUpEnquirerResult/tem:Successful/text()</con1:leftPath>
+                            <con1:rightPath>'true'</con1:rightPath>
+                          </con1:compExpr>
+                          <con1:compExpr operator="=">
+                            <con1:leftPath>fn:upper-case($body/sig:SignUpRequest/sig:CustomerDetails/cre:PropositionType/text())</con1:leftPath>
+                            <con1:rightPath>'SIGNUPANDRQAP'</con1:rightPath>
+                          </con1:compExpr>
+                        </con1:boolExpr>
+                      </con1:xqueryConditionExpr>
+                    </con3:condition>
+                    <con3:actions>
+                      <con6:route>
+                        <con1:id>_ActionId-5334401084985501305-24e50733.14680338d1e.-77e5</con1:id>
+                        <con6:service ref="ManageContactInteractions/biz/ContactProspect" xsi:type="ref:BusinessServiceRef" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+                        <con6:operation>CreateCustomerProspect</con6:operation>
+                        <con6:outboundTransform>
+                          <con3:replace varName="body">
+                            <con1:id>_ActionId-5334401084985501305-24e50733.14680338d1e.-7776</con1:id>
+                            <con3:location>
+                              <con1:xpathText>./*</con1:xpathText>
+                            </con3:location>
+                            <con3:expr>
+                              <con1:xqueryTransform>
+                                <con1:resource ref="ManageContactInteractions/xquery/MapSignUpToContactProspect"/>
+                                <con1:param name="signUpEnquirerResponse">
+                                  <con1:path>$samsSignUpResponse</con1:path>
+                                </con1:param>
+                                <con1:param name="signUpRequest">
+                                  <con1:path>$body/sig:SignUpRequest</con1:path>
+                                </con1:param>
+                              </con1:xqueryTransform>
+                            </con3:expr>
+                          </con3:replace>
+                          <con4:routing-options xmlns:con3="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con2="http://www.bea.com/wli/sb/stages/publish/config" xmlns:con4="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con5="http://www.bea.com/wli/sb/stages/publish/config" xmlns:jms="http://www.bea.com/wli/sb/transports/jms">
+                            <con1:id>_ActionId-5334401084985501305-24e50733.14680338d1e.-773d</con1:id>
+                            <con4:qualityOfService>exactly-once</con4:qualityOfService>
+                          </con4:routing-options>
+                        </con6:outboundTransform>
+                      </con6:route>
+                      <con2:replace varName="body" xmlns:con3="http://www.bea.com/wli/sb/pipeline/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con1="http://www.bea.com/wli/sb/typesystem/config">
+                        <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-5334401084985501305-24e50733.14680338d1e.-7699</con7:id>
+                        <con2:location>
+                          <con3:xpathText xmlns:con3="http://www.bea.com/wli/sb/stages/config">./*</con3:xpathText>
+                        </con2:location>
+                        <con2:expr>
+                          <con4:xqueryTransform xmlns:con4="http://www.bea.com/wli/sb/stages/config">
+                            <con4:resource ref="Common/error/xquery/SoapFaultWrapsOuFault.1.1"/>
+                            <con4:param name="message">
+                              <con4:path>fn:string-join($samsSignUpResponse/tem:SignUpEnquirerResult/tem:Errors/tem:string,'||')</con4:path>
+                            </con4:param>
+                            <con4:param name="detail">
+                              <con4:path>$empty</con4:path>
+                            </con4:param>
+                            <con4:param name="code">
+                              <con4:path>'1517'</con4:path>
+                            </con4:param>
+                          </con4:xqueryTransform>
+                        </con2:expr>
+                      </con2:replace>
+                      <con1:reply isError="true">
+                        <con1:id>_ActionId-5334401084985501305-24e50733.14680338d1e.-769b</con1:id>
+                      </con1:reply>
+                    </con3:actions>
+                  </con3:case>
+                  <con3:default>
+                    <con2:replace varName="body" xmlns:con3="http://www.bea.com/wli/sb/pipeline/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con1="http://www.bea.com/wli/sb/typesystem/config">
+                      <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-4658763651895169975-1ec5675f.1467fb2e116.-7947</con7:id>
+                      <con2:location>
+                        <con3:xpathText xmlns:con3="http://www.bea.com/wli/sb/stages/config">./*</con3:xpathText>
+                      </con2:location>
+                      <con2:expr>
+                        <con4:xqueryTransform xmlns:con4="http://www.bea.com/wli/sb/stages/config">
+                          <con4:resource ref="Common/error/xquery/SoapFaultWrapsOuFault.1.1"/>
+                          <con4:param name="message">
+                            <con4:path>fn:string-join($samsSignUpResponse/tem:SignUpEnquirerResult/tem:Errors/tem:string,'||')</con4:path>
+                          </con4:param>
+                          <con4:param name="detail">
+                            <con4:path>$empty</con4:path>
+                          </con4:param>
+                          <con4:param name="code">
+                            <con4:path>'1517'</con4:path>
+                          </con4:param>
+                        </con4:xqueryTransform>
+                      </con2:expr>
+                    </con2:replace>
+                    <con1:reply isError="true">
+                      <con1:id>_ActionId-4658763651895169975-1ec5675f.1467fb2e116.-790e</con1:id>
+                    </con1:reply>
+                  </con3:default>
+                </con3:ifThenElse>
+              </con3:actions>
+            </con3:case>
+            <con3:case>
+              <con3:condition>
+                <con1:xqueryConditionExpr>
+                  <con1:boolExpr operator="and">
+                    <con1:compExpr operator="=">
+                      <con1:leftPath>$ProceedWithSignUp</con1:leftPath>
+                      <con1:rightPath>'No'</con1:rightPath>
+                    </con1:compExpr>
+                    <con1:compExpr operator="=">
+                      <con1:leftPath>fn:upper-case($body/sig:SignUpRequest/sig:CustomerDetails/cre:PropositionType/text())</con1:leftPath>
+                      <con1:rightPath>'SIGNUPANDRQAP'</con1:rightPath>
+                    </con1:compExpr>
+                  </con1:boolExpr>
+                </con1:xqueryConditionExpr>
+              </con3:condition>
+              <con3:actions>
+                <con6:route>
+                  <con1:id>_ActionId-4658763651895169975-1ec5675f.1467fb2e116.-7b43</con1:id>
+                  <con6:service ref="ManageContactInteractions/biz/ContactProspect" xsi:type="ref:BusinessServiceRef" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+                  <con6:operation>CreateCustomerProspect</con6:operation>
+                  <con6:outboundTransform>
+                    <con3:replace varName="body">
+                      <con1:id>_ActionId-4658763651895169975-1ec5675f.1467fb2e116.-7aef</con1:id>
+                      <con3:location>
+                        <con1:xpathText>./*</con1:xpathText>
+                      </con3:location>
+                      <con3:expr>
+                        <con1:xqueryTransform>
+                          <con1:resource ref="ManageContactInteractions/xquery/MapSignUpRqapToContactProspect"/>
+                          <con1:param name="signUpRequest">
+                            <con1:path>$body/sig:SignUpRequest</con1:path>
+                          </con1:param>
+                        </con1:xqueryTransform>
+                      </con3:expr>
+                    </con3:replace>
+                    <con3:routing-options>
+                      <con1:id>_ActionId-4658763651895169975-1ec5675f.1467fb2e116.-7adf</con1:id>
+                      <con3:qualityOfService>exactly-once</con3:qualityOfService>
+                    </con3:routing-options>
+                  </con6:outboundTransform>
+                </con6:route>
+                <con2:replace varName="body" xmlns:con3="http://www.bea.com/wli/sb/pipeline/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con1="http://www.bea.com/wli/sb/typesystem/config" xmlns:jms="http://www.bea.com/wli/sb/transports/jms">
+                  <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-4658763651895169975-1ec5675f.1467fb2e116.-79f0</con7:id>
+                  <con2:location>
+                    <con3:xpathText xmlns:con3="http://www.bea.com/wli/sb/stages/config">./*</con3:xpathText>
+                  </con2:location>
+                  <con2:expr>
+                    <con4:xqueryTransform xmlns:con4="http://www.bea.com/wli/sb/stages/config">
+                      <con4:resource ref="Common/error/xquery/SoapFaultWrapsOuFault.1.1"/>
+                      <con4:param name="message">
+                        <con4:path>'There was a problem while performing signup using details provided. Please use your existing OU account details for signup. However your Request for RQAP will be fulfilled.'</con4:path>
+                      </con4:param>
+                      <con4:param name="detail">
+                        <con4:path>$empty</con4:path>
+                      </con4:param>
+                      <con4:param name="code">
+                        <con4:path>'1518'</con4:path>
+                      </con4:param>
+                    </con4:xqueryTransform>
+                  </con2:expr>
+                </con2:replace>
+                <con1:reply>
+                  <con1:id>_ActionId-4658763651895169975-1ec5675f.1467fb2e116.-79f2</con1:id>
+                </con1:reply>
+              </con3:actions>
+            </con3:case>
+            <con3:default>
+              <con5:assign varName="serviceAudit" xmlns:con3="http://www.bea.com/wli/sb/typesystem/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:jms="http://www.bea.com/wli/sb/transports/jms">
+                <con1:id>_ActionId-3799370594370666943--65f4bfa0.146d22a5a6b.-7ab7</con1:id>
+                <con5:expr>
+                  <con1:xqueryTransform>
+                    <con1:resource ref="Common/audit/xquery/ServiceAuditRequest"/>
+                    <con1:param name="requestHeader">
+                      <con1:path>$header/.</con1:path>
+                    </con1:param>
+                    <con1:param name="event">
+                      <con1:path>'ContactAlreadyExists'</con1:path>
+                    </con1:param>
+                    <con1:param name="requestBody">
+                      <con1:path>$getContactByDetailsReq</con1:path>
+                    </con1:param>
+                    <con1:param name="responseHeader">
+                      <con1:path>$reponseHeader</con1:path>
+                    </con1:param>
+                    <con1:param name="correlationId">
+                      <con1:path>$header/head:Header/CorrelationId/text()</con1:path>
+                    </con1:param>
+                    <con1:param name="responseBody">
+                      <con1:path>$getContactByDetailsRes</con1:path>
+                    </con1:param>
+                  </con1:xqueryTransform>
+                </con5:expr>
+              </con5:assign>
+              <con4:report xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con6="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:jms="http://www.bea.com/wli/sb/transports/jms">
+                <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-3799370594370666943--65f4bfa0.146d22a5a6b.-7a7e</con7:id>
+                <con4:expr>
+                  <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$serviceAudit</con6:xqueryText>
+                </con4:expr>
+                <con4:labels>
+                  <con4:key>Evt</con4:key>
+                  <con4:varName>serviceAudit</con4:varName>
+                  <con4:value>
+                    <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">./ser:AuditEvent</con6:xpathText>
+                  </con4:value>
+                </con4:labels>
+                <con4:labels>
+                  <con4:key>Id</con4:key>
+                  <con4:varName>serviceAudit</con4:varName>
+                  <con4:value>
+                    <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">./ser:CorrelationId</con6:xpathText>
+                  </con4:value>
+                </con4:labels>
+              </con4:report>
+              <con2:replace varName="body" xmlns:con3="http://www.bea.com/wli/sb/pipeline/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con1="http://www.bea.com/wli/sb/typesystem/config" xmlns:jms="http://www.bea.com/wli/sb/transports/jms">
+                <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-342045625602582618-22d921a1.145d1af29ce.-75b8</con7:id>
+                <con2:location>
+                  <con3:xpathText xmlns:con3="http://www.bea.com/wli/sb/stages/config">./*</con3:xpathText>
+                </con2:location>
+                <con2:expr>
+                  <con4:xqueryTransform xmlns:con4="http://www.bea.com/wli/sb/stages/config">
+                    <con4:resource ref="Common/error/xquery/SoapFaultWrapsOuFault.1.1"/>
+                    <con4:param name="message">
+                      <con4:path>'There was a problem while performing signup using details provided. Please use your existing OU account details for signup'</con4:path>
+                    </con4:param>
+                    <con4:param name="detail">
+                      <con4:path>$empty</con4:path>
+                    </con4:param>
+                    <con4:param name="code">
+                      <con4:path>'1516'</con4:path>
+                    </con4:param>
+                  </con4:xqueryTransform>
+                </con2:expr>
+              </con2:replace>
+              <con1:reply isError="true" xmlns:jms="http://www.bea.com/wli/sb/transports/jms">
+                <con1:id>_ActionId-342045625602582618-22d921a1.145d1af29ce.-757f</con1:id>
+              </con1:reply>
+            </con3:default>
+          </con3:ifThenElse>
+        </con:actions>
+      </con:stage>
+    </con:pipeline>
+    <con:pipeline type="response" name="SignUpPipe_response"/>
+    <con:pipeline type="error" name="_onErrorHandler-7343360098588607010--32e05206.1410bdd040d.-7f35">
+      <con:stage name="RecordSoapFault">
+        <con:context xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+          <con6:userNsDecl namespace="http://open.ac.uk/header/" prefix="ouh" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+          <con6:varNsDecl namespace="http://open.ac.uk/audit/" prefix="aud" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+          <con6:varNsDecl namespace="http://www.open.ac.uk/voice/webservices/ouvoicegetcontactws" prefix="ouv" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+          <con6:variable name="store" path="$store" asChild="false" xmlns:con6="http://www.bea.com/wli/sb/typesystem/config">
+            <con6:schema ref="ServiceRepository/ouosb/xsd/Audit" element="Audit"/>
+          </con6:variable>
+        </con:context>
+        <con:actions xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+          <con3:assign varName="faultRequest">
+            <con6:id xmlns:con6="http://www.bea.com/wli/sb/stages/config">_ActionId-7696673444199868766--28667bfc.1426ac021af.-7ce4</con6:id>
+            <con3:expr>
+              <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config"><![CDATA[<errorData>
+	<header>
+	{
+	if (fn:exists($store/soap-env:Header)) then 
+        $store/soap-env:Header
+    else $header
+    }
+	</header>	
+	<body>{$body}</body>
+	<storeBody>
+	{
+	if (fn:exists($store/soap-env:Body)) then 
+        $store/soap-env:Body
+    else $body
+    }
+	</storeBody>
+	<inbound>{$inbound}</inbound>
+	<outbound>{$store/ctx:endpoint}</outbound>
+	<fault>{$fault}</fault>
+</errorData>]]></con6:xqueryText>
+            </con3:expr>
+          </con3:assign>
+          <con3:wsCallout>
+            <con6:id xmlns:con6="http://www.bea.com/wli/sb/stages/config">_ActionId-7696673444199868766--28667bfc.1426ac021af.-7ce3</con6:id>
+            <con3:service xsi:type="ref:ProxyRef" ref="Common/error/proxy/FaultHandler" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+            <con3:request>
+              <con3:payload>$faultRequest</con3:payload>
+            </con3:request>
+            <con3:response>
+              <con3:payload>faultResponse</con3:payload>
+            </con3:response>
+            <con3:requestTransform/>
+            <con3:responseTransform/>
+          </con3:wsCallout>
+          <con3:assign varName="header">
+            <con6:id xmlns:con6="http://www.bea.com/wli/sb/stages/config">_ActionId-7696673444199868766--28667bfc.1426ac021af.-7ce2</con6:id>
+            <con3:expr>
+              <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$faultResponse/audit/*:Audit/soap-env:Header</con6:xqueryText>
+            </con3:expr>
+          </con3:assign>
+          <con4:report>
+            <con6:id xmlns:con6="http://www.bea.com/wli/sb/stages/config">_ActionId-7696673444199868766--28667bfc.1426ac021af.-7ce1</con6:id>
+            <con4:expr>
+              <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$faultResponse/audit/*</con6:xqueryText>
+            </con4:expr>
+            <con4:labels>
+              <con4:key>Error</con4:key>
+              <con4:varName>fault</con4:varName>
+              <con4:value>
+                <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">./ctx:errorCode</con6:xpathText>
+              </con4:value>
+            </con4:labels>
+            <con4:labels>
+              <con4:key>Id</con4:key>
+              <con4:varName>header</con4:varName>
+              <con4:value>
+                <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">ouh:Header/CorrelationId</con6:xpathText>
+              </con4:value>
+            </con4:labels>
+          </con4:report>
+        </con:actions>
+      </con:stage>
+      <con:stage name="ReturnFaultToClient">
+        <con:context xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+          <con6:varNsDecl namespace="http://lv.com/osb/report/" prefix="rep" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+          <con6:varNsDecl namespace="http://www.open.ac.uk/voice/webservices/ouvoicegetcontactws" prefix="ouv" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+        </con:context>
+        <con:actions xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+          <con6:replace contents-only="true" varName="body" xmlns:con6="http://www.bea.com/wli/sb/stages/transform/config">
+            <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-7060605156722513347-621cb868.14304cd2bec.-7f90</con7:id>
+            <con6:expr>
+              <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$faultResponse/soapFault/*</con6:xqueryText>
+            </con6:expr>
+          </con6:replace>
+          <con6:reply isError="true" xmlns:con6="http://www.bea.com/wli/sb/stages/config">
+            <con6:id>_ActionId-7060605156722513347-621cb868.14304cd2bec.-7f8f</con6:id>
+          </con6:reply>
+        </con:actions>
+      </con:stage>
+    </con:pipeline>
+    <con:flow>
+      <con:pipeline-node name="SignUpPipe">
+        <con:request>SignUpPipe_request</con:request>
+        <con:response>SignUpPipe_response</con:response>
+      </con:pipeline-node>
+    </con:flow>
+  </ser:router>
+  <!--ALERT_RULE <ser:alertRules xmlns:aler="http://www.bea.com/wli/monitoring/alert" xmlns:ser="http://www.bea.com/wli/sb/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <ser:alertRule name="SLA Exceeded SignUp" enabled="true">
+      <aler:description xmlns:aler="http://www.bea.com/wli/monitoring/alert"/>
+      <aler:AlertFrequency xmlns:aler="http://www.bea.com/wli/monitoring/alert">every-time</aler:AlertFrequency>
+      <aler:AlertSeverity xmlns:aler="http://www.bea.com/wli/monitoring/alert">major</aler:AlertSeverity>
+      <aler:StopProcessing xmlns:aler="http://www.bea.com/wli/monitoring/alert">false</aler:StopProcessing>
+      <aler:Condition type="statistics" xmlns:aler="http://www.bea.com/wli/monitoring/alert">
+        <aler:config aggregation-interval="10" xsi:type="mon:monitoringConditionType" xmlns:mon="http://www.bea.com/wli/monitoring/alert/condition/monitoringstatistic">
+          <mon:monCondExpr>
+            <mon:function>average</mon:function>
+            <mon:lhs>Folder$ManageContactInteractions$proxy/SignUp/Transport/response-time</mon:lhs>
+            <mon:lhs-operand-type>interval</mon:lhs-operand-type>
+            <mon:lhsDisplayName>Response Time</mon:lhsDisplayName>
+            <mon:operator>></mon:operator>
+            <mon:rhs>30000</mon:rhs>
+          </mon:monCondExpr>
+        </aler:config>
+      </aler:Condition>
+      <aler:AlertDestination ref="Common/alert/NagiosAlertDestination" xmlns:aler="http://www.bea.com/wli/monitoring/alert"/>
+      <aler:AlertSummary xsi:nil="true" xmlns:aler="http://www.bea.com/wli/monitoring/alert"/>
+    </ser:alertRule>
+  </ser:alertRules> ALERT_RULE-->
+</xml-fragment>

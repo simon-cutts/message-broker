@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-fragment xmlns:ser="http://www.bea.com/wli/sb/services" xmlns:tran="http://www.bea.com/wli/sb/transports" xmlns:http="http://www.bea.com/wli/sb/transports/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:env="http://www.bea.com/wli/config/env" xmlns:con="http://www.bea.com/wli/sb/stages/config">
+  <ser:coreEntry isProxy="false" isEnabled="true">
+    <ser:binding type="SOAP" isSoap12="false" xsi:type="con:SoapBindingType" xmlns:con="http://www.bea.com/wli/sb/services/bindings/config">
+      <con:wsdl ref="ServiceRepository/Product/GetProductSummary/wsdl/GetProductSummary.V2.0"/>
+      <con:port>
+        <con:name>BasicHttpBinding_IGetProductSummaryService</con:name>
+        <con:namespace>http://tempuri.org/</con:namespace>
+      </con:port>
+      <con:WSI-compliant>false</con:WSI-compliant>
+    </ser:binding>
+    <ser:monitoring isEnabled="true">
+      <ser:aggregationInterval>10</ser:aggregationInterval>
+    </ser:monitoring>
+    <ser:sla-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:sla-alerting>
+    <ser:ws-policy>
+      <ser:binding-mode>wsdl-policy-attachments</ser:binding-mode>
+    </ser:ws-policy>
+    <ser:result-caching isSupported="true" isEnabled="true">
+      <ser:expressionContext>
+        <con:userNsDecl prefix="get" namespace="http://open.ac.uk/Product/GetProductSummary"/>
+      </ser:expressionContext>
+      <ser:tokenExpression>
+        <con:xqueryText>$body/get:GetProductSummaryRequest/get:RequestedProduct/get:productId/text()</con:xqueryText>
+      </ser:tokenExpression>
+    </ser:result-caching>
+  </ser:coreEntry>
+  <ser:endpointConfig>
+    <tran:provider-id>http</tran:provider-id>
+    <tran:inbound>false</tran:inbound>
+    <tran:URI>
+      <env:value>http://csr-prdfix-test.open.ac.uk/Vantage/Curriculum/ProductService/GetProductSummary.V2.0.svc</env:value>
+    </tran:URI>
+    <tran:outbound-properties>
+      <tran:load-balancing-algorithm>round-robin</tran:load-balancing-algorithm>
+      <tran:retry-count>0</tran:retry-count>
+      <tran:retry-interval>0</tran:retry-interval>
+      <tran:retry-application-errors>true</tran:retry-application-errors>
+    </tran:outbound-properties>
+    <tran:provider-specific>
+      <http:outbound-properties>
+        <http:request-method>POST</http:request-method>
+        <http:timeout>0</http:timeout>
+        <http:connection-timeout>0</http:connection-timeout>
+        <http:follow-redirects>false</http:follow-redirects>
+        <http:chunked-streaming-mode>true</http:chunked-streaming-mode>
+      </http:outbound-properties>
+    </tran:provider-specific>
+  </ser:endpointConfig>
+  <!--ALERT_RULE <ser:alertRules xmlns:aler="http://www.bea.com/wli/monitoring/alert" xmlns:ser="http://www.bea.com/wli/sb/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <ser:alertRule name="Offline GetProductSummary.biz" enabled="true">
+      <aler:description xmlns:aler="http://www.bea.com/wli/monitoring/alert"/>
+      <aler:AlertFrequency xmlns:aler="http://www.bea.com/wli/monitoring/alert">every-time</aler:AlertFrequency>
+      <aler:AlertSeverity xmlns:aler="http://www.bea.com/wli/monitoring/alert">major</aler:AlertSeverity>
+      <aler:StopProcessing xmlns:aler="http://www.bea.com/wli/monitoring/alert">false</aler:StopProcessing>
+      <aler:Condition type="statistics" xmlns:aler="http://www.bea.com/wli/monitoring/alert">
+        <aler:config aggregation-interval="10" xsi:type="mon:monitoringConditionType" xmlns:mon="http://www.bea.com/wli/monitoring/alert/condition/monitoringstatistic">
+          <mon:statusCondExpr>
+            <mon:evaluateOnAllServers>false</mon:evaluateOnAllServers>
+            <mon:lhs>Folder$Product$biz/GetProductSummary/Transport/uri/any-offline/status</mon:lhs>
+            <mon:operator>=</mon:operator>
+            <mon:rhs1>1</mon:rhs1>
+            <mon:lhsDisplayName>Any URI offline on any server</mon:lhsDisplayName>
+            <mon:rhs1DisplayName>true</mon:rhs1DisplayName>
+          </mon:statusCondExpr>
+        </aler:config>
+      </aler:Condition>
+      <aler:AlertDestination ref="Common/alert/NagiosAlertDestination" xmlns:aler="http://www.bea.com/wli/monitoring/alert"/>
+      <aler:AlertSummary xsi:nil="true" xmlns:aler="http://www.bea.com/wli/monitoring/alert"/>
+    </ser:alertRule>
+  </ser:alertRules> ALERT_RULE-->
+</xml-fragment>

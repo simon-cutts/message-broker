@@ -1,0 +1,871 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-fragment xmlns:ser="http://www.bea.com/wli/sb/services" xmlns:tran="http://www.bea.com/wli/sb/transports" xmlns:env="http://www.bea.com/wli/config/env" xmlns:http="http://www.bea.com/wli/sb/transports/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:con="http://www.bea.com/wli/sb/pipeline/config" xmlns:con1="http://www.bea.com/wli/sb/stages/config" xmlns:con2="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con3="http://www.bea.com/wli/sb/typesystem/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config">
+  <ser:coreEntry isProxy="true" isEnabled="true">
+    <ser:binding type="SOAP" isSoap12="false" xsi:type="con5:SoapBindingType" xmlns:con5="http://www.bea.com/wli/sb/services/bindings/config">
+      <con5:wsdl ref="ServiceRepository/Composed/Student/ManageStudentAllocations/wsdl/ManageStudentSSTAllocation"/>
+      <con5:port>
+        <con5:name>ManageAllocationServiceAsyncSoap</con5:name>
+        <con5:namespace>http://open.ac.uk/Student/ManageSttAllocationService/</con5:namespace>
+      </con5:port>
+      <con5:selector type="SOAP body"/>
+    </ser:binding>
+    <ser:monitoring isEnabled="true">
+      <ser:aggregationInterval>10</ser:aggregationInterval>
+      <ser:pipelineMonitoringLevel>Pipeline</ser:pipelineMonitoringLevel>
+    </ser:monitoring>
+    <ser:reporting>true</ser:reporting>
+    <ser:logging isEnabled="true">
+      <ser:logLevel>debug</ser:logLevel>
+    </ser:logging>
+    <ser:sla-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:sla-alerting>
+    <ser:pipeline-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:pipeline-alerting>
+    <ser:ws-policy>
+      <ser:binding-mode>wsdl-policy-attachments</ser:binding-mode>
+    </ser:ws-policy>
+    <ser:transactions sameTxForResponse="false" isRequired="true"/>
+  </ser:coreEntry>
+  <ser:endpointConfig>
+    <tran:provider-id>local</tran:provider-id>
+    <tran:inbound>true</tran:inbound>
+    <tran:inbound-properties/>
+    <tran:all-headers>true</tran:all-headers>
+  </ser:endpointConfig>
+  <ser:router errorHandler="_onErrorHandler-6842486541006686832--131471b6.13ed5cbb78f.-7e13">
+    <con:pipeline type="request" name="AlloctionPipe_request">
+      <con:stage name="GetRegisteredProducts">
+        <con:context>
+          <con1:userNsDecl namespace="http://www.open.ac.uk/OU.VantageSST" prefix="rp"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/Student/ManageStudentSSTAllocation" prefix="ns"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/schema/RequestHeader" prefix="ns1"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/header/" prefix="head"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/audit/service" prefix="ser"/>
+          <con3:variable name="head" path="$head" asChild="false">
+            <con3:schema ref="ServiceRepository/ouosb/xsd/Header" element="Header"/>
+          </con3:variable>
+          <con3:variable name="serviceAudit" path="$serviceAudit" asChild="false">
+            <con3:schema ref="ServiceRepository/ouosb/xsd/ServiceAudit" element="ServiceAudit"/>
+          </con3:variable>
+        </con:context>
+        <con:actions>
+          <con5:assign varName="audit" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config">
+            <con6:id xmlns:con6="http://www.bea.com/wli/sb/stages/config">_ActionId-990767364683578097--5c95a2d7.13f76b45aca.-7c47</con6:id>
+            <con5:expr>
+              <con6:xqueryTransform xmlns:con6="http://www.bea.com/wli/sb/stages/config">
+                <con6:resource ref="ManageStudentAllocation/xquery/ConfigXml"/>
+                <con6:param name="key">
+                  <con6:path>'audit'</con6:path>
+                </con6:param>
+              </con6:xqueryTransform>
+            </con5:expr>
+          </con5:assign>
+          <con5:assign varName="headerId" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+            <con6:id xmlns:con6="http://www.bea.com/wli/sb/stages/config">_ActionId-7611280240701602312--25dccfda.13f2d0e2800.-7da9</con6:id>
+            <con5:expr>
+              <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$body/ns:ManageStudentSSTAllocationRequest/ns:RequestHeader/ns1:id/text()</con6:xqueryText>
+            </con5:expr>
+          </con5:assign>
+          <con2:wsCallout>
+            <con1:id>_ActionId-4234277875509627261--14861e12.13eea20a000.-779d</con1:id>
+            <con2:service xsi:type="ref:BusinessServiceRef" ref="StudentRegisteredProduct/biz/StudentRegisteredProduct" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+            <con2:operation>StudentRegisteredProducts</con2:operation>
+            <con2:request>
+              <con2:body>$studentRegisteredRequest</con2:body>
+              <con2:header>$header</con2:header>
+            </con2:request>
+            <con2:response>
+              <con2:body>studentRegisteredResponseRaw</con2:body>
+              <con2:header>headerResponse</con2:header>
+            </con2:response>
+            <con2:requestTransform>
+              <con2:assign varName="studentRegisteredRequest">
+                <con1:id>_ActionId-4234277875509627261--14861e12.13eea20a000.-7765</con1:id>
+                <con2:expr>
+                  <con1:xqueryTransform>
+                    <con1:resource ref="ManageStudentAllocation/xquery/StudentRegisteredProducts"/>
+                    <con1:param name="personalId">
+                      <con1:path>$body/ns:ManageStudentSSTAllocationRequest/ns:RequestDetails/ns:personalId/text()</con1:path>
+                    </con1:param>
+                  </con1:xqueryTransform>
+                </con2:expr>
+              </con2:assign>
+              <con2:assign varName="store">
+                <con1:id>_ActionId-8477912724008812011-44921fd8.13ef428d98d.-7f06</con1:id>
+                <con2:expr>
+                  <con1:xqueryTransform>
+                    <con1:resource ref="Common/audit/xquery/StoreRequest"/>
+                    <con1:param name="endpoint">
+                      <con1:path>$outbound</con1:path>
+                    </con1:param>
+                    <con1:param name="header">
+                      <con1:path>$header</con1:path>
+                    </con1:param>
+                    <con1:param name="request">
+                      <con1:path>$studentRegisteredRequest</con1:path>
+                    </con1:param>
+                  </con1:xqueryTransform>
+                </con2:expr>
+              </con2:assign>
+            </con2:requestTransform>
+            <con2:responseTransform>
+              <con2:ifThenElse>
+                <con1:id>_ActionId-5503918983557524023-35cad57b.140bea43f0b.-7eff</con1:id>
+                <con2:case>
+                  <con2:condition>
+                    <con1:xqueryText>$audit = 'true'</con1:xqueryText>
+                  </con2:condition>
+                  <con2:actions>
+                    <con2:assign varName="serviceAudit">
+                      <con1:id>_ActionId-5503918983557524023-35cad57b.140bea43f0b.-7ec5</con1:id>
+                      <con2:expr>
+                        <con1:xqueryTransform>
+                          <con1:resource ref="Common/audit/xquery/ServiceAuditRequest"/>
+                          <con1:param name="requestHeader">
+                            <con1:path>$header/.</con1:path>
+                          </con1:param>
+                          <con1:param name="event">
+                            <con1:path>'StudentRegisteredProducts'</con1:path>
+                          </con1:param>
+                          <con1:param name="requestBody">
+                            <con1:path>$studentRegisteredRequest</con1:path>
+                          </con1:param>
+                          <con1:param name="responseHeader">
+                            <con1:path>$headerResponse</con1:path>
+                          </con1:param>
+                          <con1:param name="correlationId">
+                            <con1:path>$header/head:Header/CorrelationId/text()</con1:path>
+                          </con1:param>
+                          <con1:param name="responseBody">
+                            <con1:path>$studentRegisteredResponseRaw</con1:path>
+                          </con1:param>
+                        </con1:xqueryTransform>
+                      </con2:expr>
+                    </con2:assign>
+                    <con4:report xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+                      <con6:id xmlns:con6="http://www.bea.com/wli/sb/stages/config">_ActionId-5503918983557524023-35cad57b.140bea43f0b.-7ec3</con6:id>
+                      <con4:expr>
+                        <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$serviceAudit</con6:xqueryText>
+                      </con4:expr>
+                      <con4:labels>
+                        <con4:key>Evt</con4:key>
+                        <con4:varName>serviceAudit</con4:varName>
+                        <con4:value>
+                          <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">./ser:AuditEvent</con6:xpathText>
+                        </con4:value>
+                      </con4:labels>
+                      <con4:labels>
+                        <con4:key>Id</con4:key>
+                        <con4:varName>serviceAudit</con4:varName>
+                        <con4:value>
+                          <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">./ser:CorrelationId</con6:xpathText>
+                        </con4:value>
+                      </con4:labels>
+                    </con4:report>
+                  </con2:actions>
+                </con2:case>
+                <con2:default/>
+              </con2:ifThenElse>
+              <con2:assign varName="studentRegisteredResponse">
+                <con1:id>_ActionId-1837717108081537831-e3389bf.1438fcc5226.-7fbf</con1:id>
+                <con2:expr>
+                  <con1:xqueryTransform>
+                    <con1:resource ref="ManageStudentAllocation/xquery/FilterStudentRegisteredProductsResult"/>
+                    <con1:param name="studentRegisteredProductsResponse">
+                      <con1:path>$studentRegisteredResponseRaw</con1:path>
+                    </con1:param>
+                  </con1:xqueryTransform>
+                </con2:expr>
+              </con2:assign>
+            </con2:responseTransform>
+          </con2:wsCallout>
+        </con:actions>
+      </con:stage>
+      <con:stage name="GetAllocatedProductId" errorHandler="_onErrorHandler-5838401363236200947--290fec4a.13f12fa9196.-7e2d">
+        <con:context>
+          <con1:varNsDecl namespace="http://open.ac.uk/Student/ManageStudentSSTAllocation" prefix="ns"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/schemas/ResponseHeader" prefix="ns1"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/schema/faults" prefix="ns2"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/Product/GetProductId" prefix="ns3"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/header/" prefix="head"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/audit/service" prefix="ser"/>
+          <con3:variable name="getProductIdResponse" path="$getProductIdResponse" asChild="false">
+            <con3:schema ref="ServiceRepository/Product/getProductId/xsd/GetProductId.0.3" element="GetProductIdResponse"/>
+          </con3:variable>
+          <con3:variable name="osbHead" path="$osbHead" asChild="false">
+            <con3:schema ref="ServiceRepository/ouosb/xsd/Header" element="Header"/>
+          </con3:variable>
+          <con3:variable name="serviceAudit" path="$serviceAudit" asChild="false">
+            <con3:schema ref="ServiceRepository/ouosb/xsd/ServiceAudit" element="ServiceAudit"/>
+          </con3:variable>
+        </con:context>
+        <con:actions>
+          <con2:wsCallout>
+            <con1:id>_ActionId-8862146484506781370-5034158e.13ef9f5de90.-7a3b</con1:id>
+            <con2:service xsi:type="ref:ProxyRef" ref="ManageStudentAllocation/proxy/GetProductIdHideSoapFault" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+            <con2:operation>GetProductId</con2:operation>
+            <con2:request>
+              <con2:body>$getProductIdRequest</con2:body>
+              <con2:header>$header</con2:header>
+            </con2:request>
+            <con2:response>
+              <con2:body>getProductIdResponse</con2:body>
+              <con2:header>headerResponse</con2:header>
+            </con2:response>
+            <con2:requestTransform>
+              <con2:assign varName="getProductIdRequest">
+                <con1:id>_ActionId-8862146484506781370-5034158e.13ef9f5de90.-7a3d</con1:id>
+                <con2:expr>
+                  <con1:xqueryTransform>
+                    <con1:resource ref="ManageStudentAllocation/xquery/GetProductId"/>
+                    <con1:param name="productCode">
+                      <con1:path>$body/ns:ManageStudentSSTAllocationRequest/ns:RequestDetails/ns:Product/ns:productCode/text()</con1:path>
+                    </con1:param>
+                    <con1:param name="requestHeader">
+                      <con1:path>$body/ns:ManageStudentSSTAllocationRequest/ns:RequestHeader</con1:path>
+                    </con1:param>
+                    <con1:param name="productType">
+                      <con1:path>$body/ns:ManageStudentSSTAllocationRequest/ns:RequestDetails/ns:Product/ns:productType/text()</con1:path>
+                    </con1:param>
+                  </con1:xqueryTransform>
+                </con2:expr>
+              </con2:assign>
+              <con2:assign varName="store">
+                <con1:id>_ActionId-8862146484506781370-5034158e.13ef9f5de90.-7a3c</con1:id>
+                <con2:expr>
+                  <con1:xqueryTransform>
+                    <con1:resource ref="Common/audit/xquery/StoreRequest"/>
+                    <con1:param name="endpoint">
+                      <con1:path>$outbound</con1:path>
+                    </con1:param>
+                    <con1:param name="header">
+                      <con1:path>$header</con1:path>
+                    </con1:param>
+                    <con1:param name="request">
+                      <con1:path>$getProductIdRequest</con1:path>
+                    </con1:param>
+                  </con1:xqueryTransform>
+                </con2:expr>
+              </con2:assign>
+            </con2:requestTransform>
+            <con2:responseTransform>
+              <con2:assign varName="allocatedProductId">
+                <con1:id>_ActionId-8862146484506781370-5034158e.13ef9f5de90.-79cd</con1:id>
+                <con2:expr>
+                  <con1:xqueryText>$getProductIdResponse/ns3:Product/ns3:productId/text()</con1:xqueryText>
+                </con2:expr>
+              </con2:assign>
+              <con2:ifThenElse>
+                <con1:id>_ActionId-5503918983557524023-35cad57b.140bea43f0b.-7e35</con1:id>
+                <con2:case>
+                  <con2:condition>
+                    <con1:xqueryText>$audit = 'true'</con1:xqueryText>
+                  </con2:condition>
+                  <con2:actions>
+                    <con2:assign varName="serviceAudit">
+                      <con1:id>_ActionId-5503918983557524023-35cad57b.140bea43f0b.-7e34</con1:id>
+                      <con2:expr>
+                        <con1:xqueryTransform>
+                          <con1:resource ref="Common/audit/xquery/ServiceAuditRequest"/>
+                          <con1:param name="requestHeader">
+                            <con1:path>$header/.</con1:path>
+                          </con1:param>
+                          <con1:param name="event">
+                            <con1:path>'GetAllocatedProductId'</con1:path>
+                          </con1:param>
+                          <con1:param name="requestBody">
+                            <con1:path>$getProductIdRequest</con1:path>
+                          </con1:param>
+                          <con1:param name="responseHeader">
+                            <con1:path>$headerResponse</con1:path>
+                          </con1:param>
+                          <con1:param name="correlationId">
+                            <con1:path>$header/head:Header/CorrelationId/text()</con1:path>
+                          </con1:param>
+                          <con1:param name="responseBody">
+                            <con1:path>$getProductIdResponse</con1:path>
+                          </con1:param>
+                        </con1:xqueryTransform>
+                      </con2:expr>
+                    </con2:assign>
+                    <con4:report xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+                      <con6:id xmlns:con6="http://www.bea.com/wli/sb/stages/config">_ActionId-5503918983557524023-35cad57b.140bea43f0b.-7e33</con6:id>
+                      <con4:expr>
+                        <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$serviceAudit</con6:xqueryText>
+                      </con4:expr>
+                      <con4:labels>
+                        <con4:key>Evt</con4:key>
+                        <con4:varName>serviceAudit</con4:varName>
+                        <con4:value>
+                          <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">./ser:AuditEvent</con6:xpathText>
+                        </con4:value>
+                      </con4:labels>
+                      <con4:labels>
+                        <con4:key>Id</con4:key>
+                        <con4:varName>serviceAudit</con4:varName>
+                        <con4:value>
+                          <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">./ser:CorrelationId</con6:xpathText>
+                        </con4:value>
+                      </con4:labels>
+                    </con4:report>
+                  </con2:actions>
+                </con2:case>
+                <con2:default/>
+              </con2:ifThenElse>
+            </con2:responseTransform>
+          </con2:wsCallout>
+        </con:actions>
+      </con:stage>
+      <con:stage name="GetEachRegisteredProductId" errorHandler="_onErrorHandler-5838401363236200947--290fec4a.13f12fa9196.-7fca">
+        <con:context>
+          <con1:varNsDecl namespace="http://www.open.ac.uk/OU.VantageSST" prefix="ou"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/Student/ManageStudentSSTAllocation" prefix="ns"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/Product/GetProductId" prefix="ns1"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/schemas/ResponseHeader" prefix="ns2"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/schema/faults" prefix="ns3"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/header/" prefix="head"/>
+          <con3:variable name="studentRegisteredResponse" path="$studentRegisteredResponse" asChild="false">
+            <con3:wsdl ref="ServiceRepository/Student/StudentRegisteredProduct/wsdl/StudentRegisteredProduct" element="ou:StudentRegisteredProductsResponse" xmlns:ou="http://www.open.ac.uk/OU.VantageSST"/>
+          </con3:variable>
+          <con3:variable name="getProductIdResponse" path="$getProductIdResponse" asChild="false">
+            <con3:schema ref="ServiceRepository/Product/getProductId/xsd/GetProductId.0.3" element="GetProductIdResponse"/>
+          </con3:variable>
+          <con3:variable name="osbHead" path="$osbHead" asChild="false">
+            <con3:schema ref="ServiceRepository/ouosb/xsd/Header" element="Header"/>
+          </con3:variable>
+        </con:context>
+        <con:actions>
+          <con2:ifThenElse>
+            <con1:id>_ActionId-990767364683578097--5c95a2d7.13f76b45aca.-7b64</con1:id>
+            <con2:case>
+              <con2:condition>
+                <con1:xqueryText>$audit = 'true'</con1:xqueryText>
+              </con2:condition>
+              <con2:actions>
+                <con5:assign varName="text" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+                  <con6:id xmlns:con6="http://www.bea.com/wli/sb/stages/config">_ActionId-2219734071687703923-27b3c4a1.13f7a4e72b2.-7d0f</con6:id>
+                  <con5:expr>
+                    <con6:xqueryTransform xmlns:con6="http://www.bea.com/wli/sb/stages/config">
+                      <con6:resource ref="Common/header/xquery/AddHeaderEvent"/>
+                      <con6:param name="event">
+                        <con6:path>'EachRegisteredProductId'</con6:path>
+                      </con6:param>
+                    </con6:xqueryTransform>
+                  </con5:expr>
+                </con5:assign>
+                <con4:report xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+                  <con6:id xmlns:con6="http://www.bea.com/wli/sb/stages/config">_ActionId-990767364683578097--5c95a2d7.13f76b45aca.-7b63</con6:id>
+                  <con4:expr>
+                    <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$text</con6:xqueryText>
+                  </con4:expr>
+                  <con4:labels>
+                    <con4:key>Evt</con4:key>
+                    <con4:varName>text</con4:varName>
+                    <con4:value>
+                      <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">/head:Header/AuditEvent</con6:xpathText>
+                    </con4:value>
+                  </con4:labels>
+                  <con4:labels>
+                    <con4:key>Id</con4:key>
+                    <con4:varName>header</con4:varName>
+                    <con4:value>
+                      <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">./head:Header/CorrelationId</con6:xpathText>
+                    </con4:value>
+                  </con4:labels>
+                </con4:report>
+              </con2:actions>
+            </con2:case>
+            <con2:default/>
+          </con2:ifThenElse>
+          <con2:foreach>
+            <con1:id>_ActionId-5609320314894414450-5d0be88e.13ef93d1ac7.-7f8a</con1:id>
+            <con2:variable>studentRegisteredResponse</con2:variable>
+            <con2:expression>
+              <con1:xpathText>./ou:StudentRegisteredProductsResult/ou:Products/ou:Product</con1:xpathText>
+            </con2:expression>
+            <con2:value-variable>product</con2:value-variable>
+            <con2:index-variable>productIndex</con2:index-variable>
+            <con2:total-variable>productCount</con2:total-variable>
+            <con2:actions>
+              <con2:wsCallout>
+                <con1:id>_ActionId-5609320314894414450-5d0be88e.13ef93d1ac7.-7db2</con1:id>
+                <con2:service xsi:type="ref:ProxyRef" ref="ManageStudentAllocation/proxy/GetProductIdHideSoapFault" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+                <con2:operation>GetProductId</con2:operation>
+                <con2:request>
+                  <con2:body>$getProductIdRequest</con2:body>
+                  <con2:header>$header</con2:header>
+                </con2:request>
+                <con2:response>
+                  <con2:body>getProductIdResponse</con2:body>
+                  <con2:header>headerResponse</con2:header>
+                </con2:response>
+                <con2:requestTransform>
+                  <con2:assign varName="getProductIdRequest">
+                    <con1:id>_ActionId-5609320314894414450-5d0be88e.13ef93d1ac7.-7d7a</con1:id>
+                    <con2:expr>
+                      <con1:xqueryTransform>
+                        <con1:resource ref="ManageStudentAllocation/xquery/GetProductId"/>
+                        <con1:param name="productCode">
+                          <con1:path>$studentRegisteredResponse/ou:StudentRegisteredProductsResult/ou:Products/ou:Product[xs:int($productIndex)]/ou:ProductCode/text()</con1:path>
+                        </con1:param>
+                        <con1:param name="requestHeader">
+                          <con1:path>$body/ns:ManageStudentSSTAllocationRequest/ns:RequestHeader</con1:path>
+                        </con1:param>
+                        <con1:param name="productType">
+                          <con1:path>$studentRegisteredResponse/ou:StudentRegisteredProductsResult/ou:Products/ou:Product[xs:int($productIndex)]/ou:ProductType/text()</con1:path>
+                        </con1:param>
+                      </con1:xqueryTransform>
+                    </con2:expr>
+                  </con2:assign>
+                  <con2:assign varName="store">
+                    <con1:id>_ActionId-5609320314894414450-5d0be88e.13ef93d1ac7.-7d0b</con1:id>
+                    <con2:expr>
+                      <con1:xqueryTransform>
+                        <con1:resource ref="Common/audit/xquery/StoreRequest"/>
+                        <con1:param name="endpoint">
+                          <con1:path>$outbound</con1:path>
+                        </con1:param>
+                        <con1:param name="header">
+                          <con1:path>$header</con1:path>
+                        </con1:param>
+                        <con1:param name="request">
+                          <con1:path>$getProductIdRequest</con1:path>
+                        </con1:param>
+                      </con1:xqueryTransform>
+                    </con2:expr>
+                  </con2:assign>
+                </con2:requestTransform>
+                <con2:responseTransform/>
+              </con2:wsCallout>
+              <con2:assign varName="productIds">
+                <con1:id>_ActionId-8862146484506781370-5034158e.13ef9f5de90.-7e2d</con1:id>
+                <con2:expr>
+                  <con1:xqueryText>fn:concat($productIds,$getProductIdResponse/ns1:Product/ns1:productId,"/")</con1:xqueryText>
+                </con2:expr>
+              </con2:assign>
+            </con2:actions>
+          </con2:foreach>
+        </con:actions>
+      </con:stage>
+      <con:stage name="GetEachLinkedProductId">
+        <con:context>
+          <con1:userNsDecl namespace="http://open.ac.uk/Product/GetProductId" prefix="ns1"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/Student/ManageStudentSSTAllocation" prefix="man"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/header/" prefix="head"/>
+          <con3:variable name="head" path="$head" asChild="false">
+            <con3:schema ref="ServiceRepository/ouosb/xsd/Header" element="Header"/>
+          </con3:variable>
+        </con:context>
+        <con:actions>
+          <con2:ifThenElse>
+            <con1:id>_ActionId-3048333412988404994--4c81f58e.140c3c8d7fd.-7f62</con1:id>
+            <con2:case>
+              <con2:condition>
+                <con1:xqueryText>$audit = 'true'</con1:xqueryText>
+              </con2:condition>
+              <con2:actions>
+                <con5:assign varName="text" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con5="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+                  <con6:id xmlns:con6="http://www.bea.com/wli/sb/stages/config">_ActionId-3048333412988404994--4c81f58e.140c3c8d7fd.-7f61</con6:id>
+                  <con5:expr>
+                    <con6:xqueryTransform xmlns:con6="http://www.bea.com/wli/sb/stages/config">
+                      <con6:resource ref="Common/header/xquery/AddHeaderEvent"/>
+                      <con6:param name="event">
+                        <con6:path>'EachLinkedProductId'</con6:path>
+                      </con6:param>
+                    </con6:xqueryTransform>
+                  </con5:expr>
+                </con5:assign>
+                <con4:report xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+                  <con6:id xmlns:con6="http://www.bea.com/wli/sb/stages/config">_ActionId-3048333412988404994--4c81f58e.140c3c8d7fd.-7f60</con6:id>
+                  <con4:expr>
+                    <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$text</con6:xqueryText>
+                  </con4:expr>
+                  <con4:labels>
+                    <con4:key>Evt</con4:key>
+                    <con4:varName>text</con4:varName>
+                    <con4:value>
+                      <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">/head:Header/AuditEvent</con6:xpathText>
+                    </con4:value>
+                  </con4:labels>
+                  <con4:labels>
+                    <con4:key>Id</con4:key>
+                    <con4:varName>header</con4:varName>
+                    <con4:value>
+                      <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">./head:Header/CorrelationId</con6:xpathText>
+                    </con4:value>
+                  </con4:labels>
+                </con4:report>
+              </con2:actions>
+            </con2:case>
+            <con2:default/>
+          </con2:ifThenElse>
+          <con2:foreach>
+            <con1:id>_ActionId-1147241567071285060-4258b213.140bfe868b3.-7e8c</con1:id>
+            <con2:variable>body</con2:variable>
+            <con2:expression>
+              <con1:xpathText>./man:ManageStudentSSTAllocationRequest/man:RequestDetails/man:Product/man:LinkedProduct</con1:xpathText>
+            </con2:expression>
+            <con2:value-variable>product</con2:value-variable>
+            <con2:index-variable>productIndex</con2:index-variable>
+            <con2:total-variable>productCount</con2:total-variable>
+            <con2:actions>
+              <con2:wsCallout>
+                <con1:id>_ActionId-1147241567071285060-4258b213.140bfe868b3.-7e8e</con1:id>
+                <con2:service xsi:type="ref:ProxyRef" ref="ManageStudentAllocation/proxy/GetProductIdHideSoapFault" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+                <con2:operation>GetProductId</con2:operation>
+                <con2:request>
+                  <con2:body>$getProductIdRequest</con2:body>
+                  <con2:header>$header</con2:header>
+                </con2:request>
+                <con2:response>
+                  <con2:body>getProductIdResponse</con2:body>
+                  <con2:header>headerResponse</con2:header>
+                </con2:response>
+                <con2:requestTransform>
+                  <con2:assign varName="getProductIdRequest">
+                    <con1:id>_ActionId-1147241567071285060-4258b213.140bfe868b3.-7e90</con1:id>
+                    <con2:expr>
+                      <con1:xqueryTransform>
+                        <con1:resource ref="ManageStudentAllocation/xquery/GetProductId"/>
+                        <con1:param name="productCode">
+                          <con1:path>$body/man:ManageStudentSSTAllocationRequest/man:RequestDetails/man:Product/man:LinkedProduct[xs:int($productIndex)]/man:productCode/text()</con1:path>
+                        </con1:param>
+                        <con1:param name="requestHeader">
+                          <con1:path>$body/man:ManageStudentSSTAllocationRequest/man:RequestHeader</con1:path>
+                        </con1:param>
+                        <con1:param name="productType">
+                          <con1:path>$body/man:ManageStudentSSTAllocationRequest/man:RequestDetails/man:Product/man:LinkedProduct[xs:int($productIndex)]/man:productType/text()</con1:path>
+                        </con1:param>
+                      </con1:xqueryTransform>
+                    </con2:expr>
+                  </con2:assign>
+                  <con2:assign varName="store">
+                    <con1:id>_ActionId-1147241567071285060-4258b213.140bfe868b3.-7e8f</con1:id>
+                    <con2:expr>
+                      <con1:xqueryTransform>
+                        <con1:resource ref="Common/audit/xquery/StoreRequest"/>
+                        <con1:param name="endpoint">
+                          <con1:path>$outbound</con1:path>
+                        </con1:param>
+                        <con1:param name="header">
+                          <con1:path>$header</con1:path>
+                        </con1:param>
+                        <con1:param name="request">
+                          <con1:path>$getProductIdRequest</con1:path>
+                        </con1:param>
+                      </con1:xqueryTransform>
+                    </con2:expr>
+                  </con2:assign>
+                </con2:requestTransform>
+                <con2:responseTransform/>
+              </con2:wsCallout>
+              <con2:assign varName="linkedProductIds">
+                <con1:id>_ActionId-1147241567071285060-4258b213.140bfe868b3.-7e8d</con1:id>
+                <con2:expr>
+                  <con1:xqueryText>fn:concat($linkedProductIds,$getProductIdResponse/ns1:Product/ns1:productId,"/")</con1:xqueryText>
+                </con2:expr>
+              </con2:assign>
+            </con2:actions>
+          </con2:foreach>
+        </con:actions>
+      </con:stage>
+      <con:stage name="AllocateStudent">
+        <con:context>
+          <con1:varNsDecl namespace="http://open.ac.uk/Student/ManageStudentSSTAllocation" prefix="ns"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/schema/faults" prefix="faul"/>
+          <con1:varNsDecl namespace="OU.AllocateStudent" prefix="ou"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/schema/ResponseHeader" prefix="res"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/Student/AllocateStudentToSST" prefix="all"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/header/" prefix="head"/>
+          <con1:varNsDecl namespace="http://open.ac.uk/audit/service" prefix="ser"/>
+          <con3:variable name="osbHead" path="$osbHead" asChild="false">
+            <con3:schema ref="ServiceRepository/ouosb/xsd/Header" element="Header"/>
+          </con3:variable>
+          <con3:variable name="serviceAudit" path="$serviceAudit" asChild="false">
+            <con3:schema ref="ServiceRepository/ouosb/xsd/ServiceAudit" element="ServiceAudit"/>
+          </con3:variable>
+        </con:context>
+        <con:actions>
+          <con2:assign varName="productIdXml">
+            <con1:id>_ActionId-8862146484506781370-5034158e.13ef9f5de90.-7cdd</con1:id>
+            <con2:expr>
+              <con1:xqueryTransform>
+                <con1:resource ref="ManageStudentAllocation/xquery/ProductId"/>
+                <con1:param name="tokens">
+                  <con1:path>$productIds</con1:path>
+                </con1:param>
+              </con1:xqueryTransform>
+            </con2:expr>
+          </con2:assign>
+          <con2:assign varName="linkedProductIdXml">
+            <con1:id>_ActionId-1147241567071285060-4258b213.140bfe868b3.-7e53</con1:id>
+            <con2:expr>
+              <con1:xqueryTransform>
+                <con1:resource ref="ManageStudentAllocation/xquery/ProductId"/>
+                <con1:param name="tokens">
+                  <con1:path>$linkedProductIds</con1:path>
+                </con1:param>
+              </con1:xqueryTransform>
+            </con2:expr>
+          </con2:assign>
+          <con2:assign varName="allocateStudentRequest">
+            <con1:id>_ActionId-3390445369791613966--55fa15c0.13f13471496.-7ef2</con1:id>
+            <con2:expr>
+              <con1:xqueryTransform>
+                <con1:resource ref="ManageStudentAllocation/xquery/AllocateStudentRequest.0.12"/>
+                <con1:param name="manageStudentSSTAllocationRequest">
+                  <con1:path>$body/ns:ManageStudentSSTAllocationRequest</con1:path>
+                </con1:param>
+                <con1:param name="allocatedProductId">
+                  <con1:path>$allocatedProductId</con1:path>
+                </con1:param>
+                <con1:param name="studentRegisteredProductsResponse">
+                  <con1:path>$studentRegisteredResponse</con1:path>
+                </con1:param>
+                <con1:param name="linkedProductIds">
+                  <con1:path>$linkedProductIdXml</con1:path>
+                </con1:param>
+                <con1:param name="productIds">
+                  <con1:path>$productIdXml</con1:path>
+                </con1:param>
+              </con1:xqueryTransform>
+            </con2:expr>
+          </con2:assign>
+          <con2:wsCallout>
+            <con1:id>_ActionId-5838401363236200947--290fec4a.13f12fa9196.-7b47</con1:id>
+            <con2:service xsi:type="ref:BusinessServiceRef" ref="ManageStudentAllocation/biz/AllocateStudentService" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+            <con2:operation>AllocateStudentToSST</con2:operation>
+            <con2:request>
+              <con2:body>$allocateStudentRequest</con2:body>
+              <con2:header>$header</con2:header>
+            </con2:request>
+            <con2:response>
+              <con2:body>allocateStudentResponse</con2:body>
+              <con2:header>headerResponse</con2:header>
+            </con2:response>
+            <con2:requestTransform>
+              <con2:assign varName="store">
+                <con1:id>_ActionId-3390445369791613966--55fa15c0.13f13471496.-7f41</con1:id>
+                <con2:expr>
+                  <con1:xqueryTransform>
+                    <con1:resource ref="Common/audit/xquery/StoreRequest"/>
+                    <con1:param name="endpoint">
+                      <con1:path>$outbound</con1:path>
+                    </con1:param>
+                    <con1:param name="header">
+                      <con1:path>$header</con1:path>
+                    </con1:param>
+                    <con1:param name="request">
+                      <con1:path>$allocateStudentRequest</con1:path>
+                    </con1:param>
+                  </con1:xqueryTransform>
+                </con2:expr>
+              </con2:assign>
+            </con2:requestTransform>
+            <con2:responseTransform>
+              <con2:ifThenElse>
+                <con1:id>_ActionId-5503918983557524023-35cad57b.140bea43f0b.-7d8a</con1:id>
+                <con2:case>
+                  <con2:condition>
+                    <con1:xqueryText>$audit = 'true'</con1:xqueryText>
+                  </con2:condition>
+                  <con2:actions>
+                    <con2:assign varName="serviceAudit">
+                      <con1:id>_ActionId-5503918983557524023-35cad57b.140bea43f0b.-7d89</con1:id>
+                      <con2:expr>
+                        <con1:xqueryTransform>
+                          <con1:resource ref="Common/audit/xquery/ServiceAuditRequest"/>
+                          <con1:param name="requestHeader">
+                            <con1:path>$header/.</con1:path>
+                          </con1:param>
+                          <con1:param name="event">
+                            <con1:path>'AllocateStudent'</con1:path>
+                          </con1:param>
+                          <con1:param name="requestBody">
+                            <con1:path>$allocateStudentRequest</con1:path>
+                          </con1:param>
+                          <con1:param name="responseHeader">
+                            <con1:path>$headerResponse</con1:path>
+                          </con1:param>
+                          <con1:param name="correlationId">
+                            <con1:path>$header/head:Header/CorrelationId/text()</con1:path>
+                          </con1:param>
+                          <con1:param name="responseBody">
+                            <con1:path>$allocateStudentResponse</con1:path>
+                          </con1:param>
+                        </con1:xqueryTransform>
+                      </con2:expr>
+                    </con2:assign>
+                    <con4:report xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+                      <con6:id xmlns:con6="http://www.bea.com/wli/sb/stages/config">_ActionId-5503918983557524023-35cad57b.140bea43f0b.-7d88</con6:id>
+                      <con4:expr>
+                        <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$serviceAudit</con6:xqueryText>
+                      </con4:expr>
+                      <con4:labels>
+                        <con4:key>Evt</con4:key>
+                        <con4:varName>serviceAudit</con4:varName>
+                        <con4:value>
+                          <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">./ser:AuditEvent</con6:xpathText>
+                        </con4:value>
+                      </con4:labels>
+                      <con4:labels>
+                        <con4:key>Id</con4:key>
+                        <con4:varName>serviceAudit</con4:varName>
+                        <con4:value>
+                          <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">./ser:CorrelationId</con6:xpathText>
+                        </con4:value>
+                      </con4:labels>
+                    </con4:report>
+                  </con2:actions>
+                </con2:case>
+                <con2:default/>
+              </con2:ifThenElse>
+            </con2:responseTransform>
+          </con2:wsCallout>
+        </con:actions>
+      </con:stage>
+    </con:pipeline>
+    <con:pipeline type="response" name="AlloctionPipe_response"/>
+    <con:pipeline type="error" name="_onErrorHandler-6842486541006686832--131471b6.13ed5cbb78f.-7e13">
+      <con:stage name="RecordSoapFault">
+        <con:context xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+          <con6:userNsDecl namespace="http://open.ac.uk/header/" prefix="ouh" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+          <con6:varNsDecl namespace="http://open.ac.uk/audit/" prefix="aud" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+          <con6:varNsDecl namespace="http://www.open.ac.uk/voice/webservices/ouvoicegetcontactws" prefix="ouv" xmlns:con6="http://www.bea.com/wli/sb/stages/config"/>
+          <con6:variable name="store" path="$store" asChild="false" xmlns:con6="http://www.bea.com/wli/sb/typesystem/config">
+            <con6:schema ref="ServiceRepository/ouosb/xsd/Audit" element="Audit"/>
+          </con6:variable>
+        </con:context>
+        <con:actions xmlns:con5="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/config" xmlns:con1="http://www.bea.com/wli/sb/stages/routing/config">
+          <con6:assign varName="faultRequest" xmlns:con6="http://www.bea.com/wli/sb/stages/transform/config">
+            <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-7696673444199868766--28667bfc.1426ac021af.-6379</con7:id>
+            <con6:expr>
+              <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config"><![CDATA[<errorData>
+	<header>
+	{
+	if (fn:exists($store/soap-env:Header)) then 
+        $store/soap-env:Header
+    else $header
+    }
+	</header>	
+	<body>{$body}</body>
+	<storeBody>
+	{
+	if (fn:exists($store/soap-env:Body)) then 
+        $store/soap-env:Body
+    else $body
+    }
+	</storeBody>
+	<inbound>{$inbound}</inbound>
+	<outbound>{$store/ctx:endpoint}</outbound>
+	<fault>{$fault}</fault>
+</errorData>]]></con6:xqueryText>
+            </con6:expr>
+          </con6:assign>
+          <con6:wsCallout xmlns:con6="http://www.bea.com/wli/sb/stages/transform/config">
+            <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-7696673444199868766--28667bfc.1426ac021af.-6378</con7:id>
+            <con6:service xsi:type="ref:ProxyRef" ref="Common/error/proxy/FaultHandler" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+            <con6:request>
+              <con6:payload>$faultRequest</con6:payload>
+            </con6:request>
+            <con6:response>
+              <con6:payload>faultResponse</con6:payload>
+            </con6:response>
+            <con6:requestTransform/>
+            <con6:responseTransform/>
+          </con6:wsCallout>
+          <con6:assign varName="header" xmlns:con6="http://www.bea.com/wli/sb/stages/transform/config">
+            <con7:id xmlns:con7="http://www.bea.com/wli/sb/stages/config">_ActionId-7696673444199868766--28667bfc.1426ac021af.-6377</con7:id>
+            <con6:expr>
+              <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$faultResponse/audit/*:Audit/soap-env:Header</con6:xqueryText>
+            </con6:expr>
+          </con6:assign>
+          <con4:report>
+            <con6:id xmlns:con6="http://www.bea.com/wli/sb/stages/config">_ActionId-7696673444199868766--28667bfc.1426ac021af.-6376</con6:id>
+            <con4:expr>
+              <con6:xqueryText xmlns:con6="http://www.bea.com/wli/sb/stages/config">$faultResponse/audit/*</con6:xqueryText>
+            </con4:expr>
+            <con4:labels>
+              <con4:key>Error</con4:key>
+              <con4:varName>fault</con4:varName>
+              <con4:value>
+                <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">./ctx:errorCode</con6:xpathText>
+              </con4:value>
+            </con4:labels>
+            <con4:labels>
+              <con4:key>Id</con4:key>
+              <con4:varName>header</con4:varName>
+              <con4:value>
+                <con6:xpathText xmlns:con6="http://www.bea.com/wli/sb/stages/config">ouh:Header/CorrelationId</con6:xpathText>
+              </con4:value>
+            </con4:labels>
+          </con4:report>
+          <con7:Error xmlns:con7="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con="http://www.bea.com/wli/sb/typesystem/config" xmlns:con6="http://www.bea.com/wli/sb/pipeline/config" xmlns:jms="http://www.bea.com/wli/sb/transports/jms">
+            <con8:id xmlns:con8="http://www.bea.com/wli/sb/stages/config">_ActionId-7696673444199868766--28667bfc.1426ac021af.-6374</con8:id>
+            <con7:errCode>1505</con7:errCode>
+            <con7:message>Error Code: 1505. There was a problem within the AllocationLocal proxy of ManageStudentAllocation. The message will be retried. If the failure presists the message will be moved to the queue ManageAllocationDistributedQueueError</con7:message>
+          </con7:Error>
+        </con:actions>
+      </con:stage>
+    </con:pipeline>
+    <con:pipeline type="error" name="_onErrorHandler-5838401363236200947--290fec4a.13f12fa9196.-7fca">
+      <con:stage name="CatchRegisteredFault">
+        <con:comment>Catch the SOAP like fault if no product found. All errors are ultimately handled by the service level error handler</con:comment>
+        <con:context>
+          <con1:varNsDecl namespace="http://open.ac.uk/schema/faults" prefix="ns"/>
+          <con3:variable name="ouSoapFault" path="$ouSoapFault" asChild="false">
+            <con3:schema ref="ServiceRepository/common/xsd/SOAPFault.1.1" element="Fault"/>
+          </con3:variable>
+        </con:context>
+        <con:actions>
+          <con2:assign varName="faultCode">
+            <con1:id>_ActionId-5838401363236200947--290fec4a.13f12fa9196.-7ef0</con1:id>
+            <con2:expr>
+              <con1:xqueryText>$fault//ns:faultcode/text()</con1:xqueryText>
+            </con2:expr>
+          </con2:assign>
+          <con2:assign varName="faultDetail">
+            <con1:id>_ActionId-5838401363236200947--290fec4a.13f12fa9196.-7ed2</con1:id>
+            <con2:expr>
+              <con1:xqueryText>$fault//ns:detail/text()</con1:xqueryText>
+            </con2:expr>
+          </con2:assign>
+        </con:actions>
+      </con:stage>
+    </con:pipeline>
+    <con:pipeline type="error" name="_onErrorHandler-5838401363236200947--290fec4a.13f12fa9196.-7e2d">
+      <con:stage name="CatchAllocatedFault">
+        <con:comment>Catch the SOAP like fault if no product found. All errors are ultimately handled by the service level error handler</con:comment>
+        <con:context>
+          <con1:varNsDecl namespace="http://open.ac.uk/schema/faults" prefix="ns"/>
+          <con3:variable name="ouSoapFault" path="$ouSoapFault" asChild="false">
+            <con3:schema ref="ServiceRepository/common/xsd/SOAPFault.1.1" element="Fault"/>
+          </con3:variable>
+        </con:context>
+        <con:actions>
+          <con2:assign varName="faultCode">
+            <con1:id>_ActionId-5838401363236200947--290fec4a.13f12fa9196.-7dbc</con1:id>
+            <con2:expr>
+              <con1:xqueryText>$fault//ns:faultcode/text()</con1:xqueryText>
+            </con2:expr>
+          </con2:assign>
+          <con2:assign varName="faultDetail">
+            <con1:id>_ActionId-5838401363236200947--290fec4a.13f12fa9196.-7dbb</con1:id>
+            <con2:expr>
+              <con1:xqueryText>$fault//ns:detail/text()</con1:xqueryText>
+            </con2:expr>
+          </con2:assign>
+        </con:actions>
+      </con:stage>
+    </con:pipeline>
+    <con:flow>
+      <con:pipeline-node name="AlloctionPipe">
+        <con:comment>Allocate</con:comment>
+        <con:request>AlloctionPipe_request</con:request>
+        <con:response>AlloctionPipe_response</con:response>
+      </con:pipeline-node>
+    </con:flow>
+  </ser:router>
+</xml-fragment>

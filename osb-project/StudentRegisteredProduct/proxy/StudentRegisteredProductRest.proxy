@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-fragment xmlns:ser="http://www.bea.com/wli/sb/services" xmlns:tran="http://www.bea.com/wli/sb/transports" xmlns:env="http://www.bea.com/wli/config/env" xmlns:http="http://www.bea.com/wli/sb/transports/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:con="http://www.bea.com/wli/sb/stages/config">
+  <ser:coreEntry isProxy="true" isEnabled="true">
+    <ser:description>http://localhost:7001/osb/Student/StudentRegisteredProduct/Rest/1.0?sPersonalId=C0149184&amp;sUserId=C0149184</ser:description>
+    <ser:binding type="Mixed" xsi:type="con:MixedBindingType" xmlns:con="http://www.bea.com/wli/sb/services/bindings/config">
+      <con:request type="XML"/>
+      <con:response type="XML"/>
+    </ser:binding>
+    <ser:monitoring isEnabled="true">
+      <ser:aggregationInterval>10</ser:aggregationInterval>
+      <ser:pipelineMonitoringLevel>Pipeline</ser:pipelineMonitoringLevel>
+    </ser:monitoring>
+    <ser:reporting>true</ser:reporting>
+    <ser:logging isEnabled="true">
+      <ser:logLevel>debug</ser:logLevel>
+    </ser:logging>
+    <ser:sla-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:sla-alerting>
+    <ser:pipeline-alerting isEnabled="true">
+      <ser:alertLevel>normal</ser:alertLevel>
+    </ser:pipeline-alerting>
+  </ser:coreEntry>
+  <ser:endpointConfig>
+    <tran:provider-id>http</tran:provider-id>
+    <tran:inbound>true</tran:inbound>
+    <tran:URI>
+      <env:value>/osb/Student/StudentRegisteredProduct/Rest/1.0</env:value>
+    </tran:URI>
+    <tran:inbound-properties/>
+    <tran:all-headers>false</tran:all-headers>
+    <tran:provider-specific>
+      <http:inbound-properties>
+        <http:client-authentication xsi:type="http:HttpBasicAuthenticationType"/>
+      </http:inbound-properties>
+    </tran:provider-specific>
+  </ser:endpointConfig>
+  <ser:router errorHandler="_onErrorHandler-1949595606811889454-4ec12c90.1417d216e65.-7d02">
+    <con:pipeline type="request" name="NotSupportedMethodPipe_request" xmlns:con="http://www.bea.com/wli/sb/pipeline/config">
+      <con:stage name="RaiseError" xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con1="http://www.bea.com/wli/sb/stages/config">
+        <con:context/>
+        <con:actions>
+          <con3:Error>
+            <con1:id>_ActionId-1949595606811889454-4ec12c90.1417d216e65.-7f08</con1:id>
+            <con3:errCode>NOT_SUPPORTED_HTTP_METHOD</con3:errCode>
+            <con3:message>Unsupported HTTP method.</con3:message>
+          </con3:Error>
+        </con:actions>
+      </con:stage>
+    </con:pipeline>
+    <con:pipeline type="response" name="NotSupportedMethodPipe_response" xmlns:con="http://www.bea.com/wli/sb/pipeline/config"/>
+    <con:pipeline type="error" name="_onErrorHandler-1949595606811889454-4ec12c90.1417d216e65.-7d02" xmlns:con="http://www.bea.com/wli/sb/pipeline/config">
+      <con:stage name="ReturnSoapFault">
+        <con:context/>
+        <con:actions>
+          <con3:transport-headers xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con1="http://www.bea.com/wli/sb/stages/config">
+            <con1:id>_ActionId-1949595606811889454-4ec12c90.1417d216e65.-7c40</con1:id>
+            <con3:header-set>inbound-response</con3:header-set>
+            <con3:header name="Content-Type" value="expression">
+              <con1:xqueryTransform>
+                <con1:resource ref="Common/rest/xquery/charset"/>
+              </con1:xqueryTransform>
+            </con3:header>
+            <con3:header name="Content-Length" value="expression">
+              <con1:xqueryText>string-length($body)</con1:xqueryText>
+            </con3:header>
+            <con3:header name="Date" value="expression">
+              <con1:xqueryText>fn-bea:dateTime-to-string-with-format("E, dd MMM yyyy hh:mm:ss",fn:current-dateTime())</con1:xqueryText>
+            </con3:header>
+            <con3:header name="Content-Encoding" value="expression">
+              <con1:xqueryText>'UTF-8'</con1:xqueryText>
+            </con3:header>
+            <con3:header name="Allow" value="expression">
+              <con1:xqueryText>'GET'</con1:xqueryText>
+            </con3:header>
+          </con3:transport-headers>
+          <con1:reply xmlns:con1="http://www.bea.com/wli/sb/stages/config">
+            <con1:id>_ActionId-1949595606811889454-4ec12c90.1417d216e65.-7b97</con1:id>
+          </con1:reply>
+        </con:actions>
+      </con:stage>
+    </con:pipeline>
+    <con:flow xmlns:con="http://www.bea.com/wli/sb/pipeline/config">
+      <con:branch-node type="condition" name="MethodBranch">
+        <con:context/>
+        <con:branch-table variable="inbound">
+          <con:xpath>
+            <con1:xpathText xmlns:con1="http://www.bea.com/wli/sb/stages/config">./ctx:transport/ctx:request/http:http-method/text()</con1:xpathText>
+          </con:xpath>
+          <con:branch name="GET">
+            <con:operator>equals</con:operator>
+            <con:value>'GET'</con:value>
+            <con:flow>
+              <con:route-node name="StudentRegisteredProductSoapRoute">
+                <con:context xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con1="http://www.bea.com/wli/sb/stages/config">
+                  <con1:userNsDecl namespace="http://www.crm.org/CustomerService/" prefix="cus"/>
+                </con:context>
+                <con:actions xmlns:con3="http://www.bea.com/wli/sb/stages/transform/config" xmlns:con2="http://www.bea.com/wli/sb/stages/routing/config" xmlns:con4="http://www.bea.com/wli/sb/stages/logging/config" xmlns:con1="http://www.bea.com/wli/sb/stages/config">
+                  <con2:route>
+                    <con1:id>_ActionId-1949595606811889454-4ec12c90.1417d216e65.-7e93</con1:id>
+                    <con2:service ref="StudentRegisteredProduct/proxy/StudentRegisteredProduct" xsi:type="ref:ProxyRef" xmlns:ref="http://www.bea.com/wli/sb/reference"/>
+                    <con2:operation>StudentRegisteredProducts</con2:operation>
+                    <con2:outboundTransform>
+                      <con3:assign varName="map">
+                        <con1:id>_ActionId-1949595606811889454-4ec12c90.1417d216e65.-7e15</con1:id>
+                        <con3:expr>
+                          <con1:xqueryTransform>
+                            <con1:resource ref="Common/rest/xquery/HttpParametersToMap"/>
+                            <con1:param name="queryParameters">
+                              <con1:path>$inbound/ctx:transport/ctx:request/http:query-string/text()</con1:path>
+                            </con1:param>
+                          </con1:xqueryTransform>
+                        </con3:expr>
+                      </con3:assign>
+                      <con3:replace varName="body" contents-only="true">
+                        <con1:id>_ActionId-1949595606811889454-4ec12c90.1417d216e65.-7e92</con1:id>
+                        <con3:expr>
+                          <con1:xqueryTransform>
+                            <con1:resource ref="StudentRegisteredProduct/xquery/MapToStudentRegisteredProducts"/>
+                            <con1:param name="map">
+                              <con1:path>$map</con1:path>
+                            </con1:param>
+                          </con1:xqueryTransform>
+                        </con3:expr>
+                      </con3:replace>
+                    </con2:outboundTransform>
+                    <con2:responseTransform>
+                      <con3:transport-headers>
+                        <con1:id>_ActionId-1949595606811889454-4ec12c90.1417d216e65.-7e90</con1:id>
+                        <con3:header-set>inbound-response</con3:header-set>
+                        <con3:header name="Content-Type" value="expression">
+                          <con1:xqueryTransform>
+                            <con1:resource ref="Common/rest/xquery/charset"/>
+                          </con1:xqueryTransform>
+                        </con3:header>
+                        <con3:header name="Content-Length" value="expression">
+                          <con1:xqueryText>string-length($body)</con1:xqueryText>
+                        </con3:header>
+                        <con3:header name="Date" value="expression">
+                          <con1:xqueryText>fn-bea:dateTime-to-string-with-format("E, dd MMM yyyy hh:mm:ss",fn:current-dateTime())</con1:xqueryText>
+                        </con3:header>
+                        <con3:header name="Content-Encoding" value="expression">
+                          <con1:xqueryText>'UTF-8'</con1:xqueryText>
+                        </con3:header>
+                        <con3:header name="Allow" value="expression">
+                          <con1:xqueryText>'GET'</con1:xqueryText>
+                        </con3:header>
+                      </con3:transport-headers>
+                    </con2:responseTransform>
+                  </con2:route>
+                </con:actions>
+              </con:route-node>
+            </con:flow>
+          </con:branch>
+          <con:default-branch>
+            <con:flow>
+              <con:pipeline-node name="NotSupportedMethodPipe">
+                <con:request>NotSupportedMethodPipe_request</con:request>
+                <con:response>NotSupportedMethodPipe_response</con:response>
+              </con:pipeline-node>
+            </con:flow>
+          </con:default-branch>
+        </con:branch-table>
+      </con:branch-node>
+    </con:flow>
+  </ser:router>
+  <!--ALERT_RULE <ser:alertRules xmlns:aler="http://www.bea.com/wli/monitoring/alert" xmlns:ser="http://www.bea.com/wli/sb/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <ser:alertRule name="SLA Exceeded StudentRegisteredProductRest" enabled="true">
+      <aler:description xmlns:aler="http://www.bea.com/wli/monitoring/alert"/>
+      <aler:AlertFrequency xmlns:aler="http://www.bea.com/wli/monitoring/alert">every-time</aler:AlertFrequency>
+      <aler:AlertSeverity xmlns:aler="http://www.bea.com/wli/monitoring/alert">major</aler:AlertSeverity>
+      <aler:StopProcessing xmlns:aler="http://www.bea.com/wli/monitoring/alert">false</aler:StopProcessing>
+      <aler:Condition type="statistics" xmlns:aler="http://www.bea.com/wli/monitoring/alert">
+        <aler:config aggregation-interval="10" xsi:type="mon:monitoringConditionType" xmlns:mon="http://www.bea.com/wli/monitoring/alert/condition/monitoringstatistic">
+          <mon:monCondExpr>
+            <mon:function>average</mon:function>
+            <mon:lhs>Folder$StudentRegisteredProduct$proxy/StudentRegisteredProductRest/Transport/response-time</mon:lhs>
+            <mon:lhs-operand-type>interval</mon:lhs-operand-type>
+            <mon:lhsDisplayName>Response Time</mon:lhsDisplayName>
+            <mon:operator>></mon:operator>
+            <mon:rhs>30000</mon:rhs>
+          </mon:monCondExpr>
+        </aler:config>
+      </aler:Condition>
+      <aler:AlertDestination ref="Common/alert/NagiosAlertDestination" xmlns:aler="http://www.bea.com/wli/monitoring/alert"/>
+      <aler:AlertSummary xsi:nil="true" xmlns:aler="http://www.bea.com/wli/monitoring/alert"/>
+    </ser:alertRule>
+  </ser:alertRules> ALERT_RULE-->
+</xml-fragment>

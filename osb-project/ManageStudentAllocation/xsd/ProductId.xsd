@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+	Temporary storage of productIds. USed internally, not required to be held centrally
+	
+	Author: simon Cutts
+ -->
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://open.ac.uk/curriculum/ProductId/"
+	targetNamespace="http://open.ac.uk/curriculum/ProductId/">
+	
+	<element name="ProductIds" type="tns:ProductIdsType"/>
+
+    <complexType name="ProductIdsType">
+    	<sequence>
+    		<element name="productId" type="string"
+    			maxOccurs="unbounded" minOccurs="0" />
+    	</sequence>
+    </complexType>
+    
+</schema>
