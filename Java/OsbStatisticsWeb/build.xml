@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="build" name="OsbStatisticsWeb">
+	
+	<!-- Build file for StatisticsWeb. Depends on the JAR file from
+		 Statistics project. 
+
+		 Author: Simon Cutts
+	 -->
+	<property file="../../Build/build.properties"/>
+	
+	<property name="debuglevel" value="source,lines,vars" />
+	<property name="target" value="1.6" />
+	<property name="source" value="1.6" />
+	
+    <path id="WebLogic System Libraries.libraryclasspath">
+        <pathelement location="${fmw.home}/wlserver_10.3/server/lib/api.jar"/>
+        <pathelement location="${fmw.home}/modules/glassfish.jstl_1.2.0.1.jar"/>
+        <pathelement location="${fmw.home}/modules/javax.jsf_1.1.0.0_1-2.jar"/>
+        <pathelement location="${fmw.home}/modules/javax.ejb_3.0.1.jar"/>
+        <pathelement location="${fmw.home}/modules/javax.enterprise.deploy_1.2.jar"/>
+        <pathelement location="${fmw.home}/modules/javax.interceptor_1.0.jar"/>
+        <pathelement location="${fmw.home}/modules/javax.jms_1.1.1.jar"/>
+        <pathelement location="${fmw.home}/modules/javax.jsp_1.3.0.0_2-1.jar"/>
+        <pathelement location="${fmw.home}/modules/javax.jws_2.0.jar"/>
+        <pathelement location="${fmw.home}/modules/javax.activation_1.1.0.0_1-1.jar"/>
+        <pathelement location="${fmw.home}/modules/javax.mail_1.1.0.0_1-4-1.jar"/>
+        <pathelement location="${fmw.home}/modules/javax.xml.soap_1.3.1.0.jar"/>
+        <pathelement location="${fmw.home}/modules/javax.xml.rpc_1.2.1.jar"/>
+        <pathelement location="${fmw.home}/modules/javax.xml.ws_2.1.1.jar"/>
+        <pathelement location="${fmw.home}/modules/javax.management.j2ee_1.0.jar"/>
+        <pathelement location="${fmw.home}/modules/javax.resource_1.5.1.jar"/>
+        <pathelement location="${fmw.home}/modules/javax.servlet_1.0.0.0_2-5.jar"/>
+        <pathelement location="${fmw.home}/modules/javax.transaction_1.0.0.0_1-1.jar"/>
+        <pathelement location="${fmw.home}/modules/javax.xml.stream_1.1.1.0.jar"/>
+        <pathelement location="${fmw.home}/modules/javax.security.jacc_1.0.0.0_1-1.jar"/>
+        <pathelement location="${fmw.home}/modules/javax.xml.registry_1.0.0.0_1-0.jar"/>
+        <pathelement location="${fmw.home}/wlserver_10.3/server/lib/wls-api.jar"/>
+        <pathelement location="${fmw.home}/modules/com.bea.core.apache_1.3.0.1.jar"/>
+        <pathelement location="${fmw.home}/modules/com.bea.core.i18n_1.9.0.0.jar"/>
+        <pathelement location="${fmw.home}/modules/com.bea.core.logging_1.9.0.0.jar"/>
+        <pathelement location="${fmw.home}/modules/com.bea.core.utils.full_1.10.0.0.jar"/>
+        <pathelement location="${fmw.home}/modules/com.bea.core.utils.wrapper_1.4.0.0.jar"/>
+        <pathelement location="${fmw.home}/modules/com.bea.core.utils.classloaders_2.0.0.0.jar"/>
+        <pathelement location="${fmw.home}/modules/com.bea.core.common.security.providers.env_1.0.0.0_6-2-0-0.jar"/>
+        <pathelement location="${fmw.home}/modules/com.bea.core.common.security.saml2.manage_1.0.0.0_6-2-0-0.jar"/>
+        <pathelement location="${fmw.home}/modules/com.bea.core.weblogic.web.api_1.4.0.0.jar"/>
+        <pathelement location="${fmw.home}/modules/com.bea.core.weblogic.rmi.client_1.11.0.0.jar"/>
+        <pathelement location="${fmw.home}/modules/com.bea.core.transaction_2.7.1.0.jar"/>
+        <pathelement location="${fmw.home}/modules/com.bea.core.workarea_1.8.0.0.jar"/>
+        <pathelement location="${fmw.home}/modules/com.bea.core.xml.weblogic.xpath_1.5.0.0.jar"/>
+        <pathelement location="${fmw.home}/modules/com.bea.core.datasource6_1.10.0.0.jar"/>
+        <pathelement location="${fmw.home}/modules/com.bea.core.weblogic.stax_1.10.0.0.jar"/>
+        <pathelement location="${fmw.home}/modules/javax.persistence_1.0.0.0_1-0-2.jar"/>
+    </path>
+	
+    <path id="Web App Libraries.libraryclasspath">
+        <pathelement location="WebContent/WEB-INF/lib/Statistics.jar"/>
+    </path>
+	
+    <path id="StatisticsWeb.classpath">
+        <pathelement location="build/classes"/>
+        <path refid="WebLogic System Libraries.libraryclasspath"/>
+        <path refid="Web App Libraries.libraryclasspath"/>
+        <pathelement location="${fmw.home}/wlserver_10.3/server/lib/weblogic.jar"/>
+        <pathelement location="${fmw.home}/Oracle_OSB1/lib/sb-kernel-api.jar"/>
+        <pathelement location="${fmw.home}/Oracle_OSB1/modules/com.bea.common.configfwk_1.6.0.0.jar"/>
+        <pathelement location="${fmw.home}/modules/com.bea.core.management.core_2.9.0.1.jar"/>
+        <pathelement location="${fmw.home}/modules/com.bea.core.management.jmx_1.4.2.0.jar"/>
+        <pathelement location="${fmw.home}/Oracle_OSB1/lib/sb-kernel-impl.jar"/>
+        <pathelement location="WebContent/WEB-INF/lib/OsbStatistics.jar"/>
+    </path>
+	
+    <target name="init">
+        <mkdir dir="build/classes"/>
+        <copy includeemptydirs="false" todir="build/classes">
+            <fileset dir="src">
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+	
+    <target name="clean">
+        <delete dir="build/classes"/>
+    </target>
+
+    <target name="build" depends="init">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="build/classes" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="StatisticsWeb.classpath"/>
+        </javac>
+    </target>
+	
+	<target name="war" depends="clean,build">
+	    <war destfile="${ant.project.name}.war" webxml="WebContent/WEB-INF/web.xml">
+	        <fileset dir="WebContent"/>
+	        <lib dir="WebContent/WEB-INF/lib"/>
+	        <classes dir="build/classes"/>
+	    </war>
+	</target>
+        	
+</project>

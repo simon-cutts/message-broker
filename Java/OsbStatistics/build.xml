@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="build" name="OsbStatistics">
+
+	<!-- Build file for Statistics. 
+
+		 Author: Simon Cutts
+	 -->
+	<property file="../../Build/build.properties"/>
+	
+	<property name="debuglevel" value="source,lines,vars" />
+	<property name="target" value="1.6" />
+	<property name="source" value="1.6" />
+
+	<path id="Statistics.classpath">
+		<pathelement location="bin" />
+		<pathelement location="${fmw.home}/wlserver_10.3/server/lib/weblogic.jar"/>
+		<pathelement location="${fmw.home}/Oracle_OSB1/lib/sb-kernel-api.jar"/>
+		<pathelement location="${fmw.home}/Oracle_OSB1/modules/com.bea.common.configfwk_1.6.0.0.jar"/>
+		<pathelement location="${fmw.home}/modules/com.bea.core.management.core_2.9.0.1.jar"/>
+		<pathelement location="${fmw.home}/modules/com.bea.core.management.jmx_1.4.2.0.jar"/>
+		<pathelement location="${fmw.home}/Oracle_OSB1/lib/sb-kernel-impl.jar"/>
+	</path>
+
+	<target name="init">
+		<mkdir dir="bin" />
+		<copy includeemptydirs="false" todir="bin">
+			<fileset dir="src">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="clean">
+		<delete dir="bin" />
+	</target>
+
+	<target name="cleanall" depends="clean" />
+
+	<target name="build" depends="init">
+		<javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
+			<src path="src" />
+			<classpath refid="Statistics.classpath" />
+		</javac>
+	</target>
+
+	<target name="jar" depends="build" description="Create JAR and copy to depedent projects">
+		<jar destfile="${ant.project.name}.jar" 
+			excludes="**/Test*.class"
+			basedir="bin">
+		</jar>
+		<copy todir="../OsbStatisticsWeb/WebContent/WEB-INF/lib" overwrite="true">
+			<fileset file="${ant.project.name}.jar" />
+		</copy>
+	</target>
+
+	<target name="jar-clean" depends="clean, jar" />
+
+</project>
